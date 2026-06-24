@@ -1,0 +1,259 @@
+@page "/EarthMagneticFieldSingleCalculation"
+@inject ILogger<EarthMagneticFieldSingleCalculation> logger
+@inject ISnackbar Snackbar
+@inject IEarthMagneticFieldAPIUtils Api
+
+<MudUnitAndReferenceChoiceTag HttpHost=@Api.HostNameUnitConversion
+                              HttpBasePath=@Api.HostBasePathUnitConversion
+                              HttpController="UnitSystem/"
+                              UnitSystemName="@DataUtils.UnitAndReferenceParameters.UnitSystemName"
+                              UnitSystemNameChanged="@DataUtils.UpdateUnitSystemName">
+    <MudForm>
+        <MudPaper Class="p-4 mb-4" Elevation="2">
+            <MudContainer Class="d-flex flex-column" style="max-width: 900px; width: 100%;">
+                <MudText Typo="Typo.h6" Class="mb-2">Earth Geomagnetic Field Single Calculation</MudText>
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudInputAngleWithUnitAdornment QuantityLabel="Sexagesimal Latitude (WGS84)"
+                                                        SIValueNullable="latitudeWGS84"
+                                                        SIValueNullableChanged="@(val => latitudeWGS84 = val)" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudInputWithUnitAdornment QuantityName="PlaneAngleGeodesic"
+                                                   QuantityLabel="Decimal Latitude (WGS84)"
+                                                   SIValueNullable="latitudeWGS84"
+                                                   SIValueNullableChanged="@(val => latitudeWGS84 = val)" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudInputAngleWithUnitAdornment QuantityLabel="Sexagesimal Longitude (WGS84)"
+                                                        SIValueNullable="longitudeWGS84"
+                                                        SIValueNullableChanged="@(val => longitudeWGS84 = val)" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudInputWithUnitAdornment QuantityName="PlaneAngleGeodesic"
+                                                   QuantityLabel="Decimal Longitude (WGS84)"
+                                                   SIValueNullable="longitudeWGS84"
+                                                   SIValueNullableChanged="@(val => longitudeWGS84 = val)" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudInputWithUnitAdornment QuantityName="DepthDrilling"
+                                                   QuantityLabel="Depth"
+                                                   SIValueNullable="depthWGS84"
+                                                   SIValueNullableChanged="@(val => depthWGS84 = val)" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="dateTimeText"
+                                      Label="Date-time"
+                                      ShrinkLabel />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudSelect T="EarthMagneticFieldCalculationMethod"
+                                   Label="Calculation method"
+                                   @bind-Value="calculationMethod"
+                                   ShrinkLabel>
+                            <MudSelectItem Value="EarthMagneticFieldCalculationMethod.WMM2025">WMM2025</MudSelectItem>
+                            <MudSelectItem Value="EarthMagneticFieldCalculationMethod.IGRJ14">IGRF14</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12" Class="d-flex align-end">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   OnClick="CalculateAsync"
+                                   Disabled="@isCalculating">
+                            Calculate
+                        </MudButton>
+                    </MudItem>
+                    @if (isCalculating)
+                    {
+                        <MudItem xs="12">
+                            <MudProgressLinear Indeterminate="true" Color="Color.Info" Class="mt-2" />
+                        </MudItem>
+                    }
+                </MudGrid>
+
+                <MudGrid Class="mt-2">
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudInputWithUnitAdornment QuantityName="PlaneAngleDrilling"
+                                                   QuantityLabel="Dip"
+                                                   ReadOnly="true"
+                                                   SIValueNullable="dip"
+                                                   SIValueNullableChanged="@(val => dip = val)" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudInputWithUnitAdornment QuantityName="PlaneAngleDrilling"
+                                                   QuantityLabel="Declination"
+                                                   ReadOnly="true"
+                                                   SIValueNullable="declination"
+                                                   SIValueNullableChanged="@(val => declination = val)" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudInputWithUnitAdornment QuantityName="EarthMagneticFluxDensity"
+                                                   QuantityLabel="Horizontal field"
+                                                   ReadOnly="true"
+                                                   SIValueNullable="horizontalMagneticField"
+                                                   SIValueNullableChanged="@(val => horizontalMagneticField = val)" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudInputWithUnitAdornment QuantityName="EarthMagneticFluxDensity"
+                                                   QuantityLabel="Field intensity"
+                                                   ReadOnly="true"
+                                                   SIValueNullable="fieldIntensity"
+                                                   SIValueNullableChanged="@(val => fieldIntensity = val)" />
+                    </MudItem>
+                </MudGrid>
+            </MudContainer>
+        </MudPaper>
+    </MudForm>
+</MudUnitAndReferenceChoiceTag>
+
+@code {
+    private double? latitudeWGS84;
+    private double? longitudeWGS84;
+    private double? depthWGS84;
+    private string dateTimeText = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd HH:mm:ss zzz", System.Globalization.CultureInfo.InvariantCulture);
+    private EarthMagneticFieldCalculationMethod calculationMethod = EarthMagneticFieldCalculationMethod.WMM2025;
+    private double? dip;
+    private double? declination;
+    private double? horizontalMagneticField;
+    private double? fieldIntensity;
+    private bool isCalculating;
+
+    private async Task CalculateAsync()
+    {
+        if (latitudeWGS84 == null || longitudeWGS84 == null || depthWGS84 == null)
+        {
+            Snackbar.Add("Latitude, longitude, and depth are required.", Severity.Warning);
+            return;
+        }
+
+        if (!TryParseDateTime(dateTimeText, out DateTimeOffset dateTime))
+        {
+            Snackbar.Add("Date-time could not be parsed.", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+            isCalculating = true;
+            EarthMagneticData? result = await CalculateEarthMagneticFieldAsync(latitudeWGS84.Value, longitudeWGS84.Value, depthWGS84.Value, dateTime);
+            if (result == null)
+            {
+                ClearResults();
+                Snackbar.Add("No earth geomagnetic field value was returned for this location.", Severity.Warning);
+            }
+            else
+            {
+                dip = result.Dip;
+                declination = result.Declination;
+                horizontalMagneticField = result.HorizontalMagneticField;
+                fieldIntensity = result.FieldIntensity;
+                Snackbar.Add("Earth geomagnetic field calculation completed.", Severity.Success);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Problem while calculating earth geomagnetic field");
+            Snackbar.Add("Problem while calculating earth geomagnetic field: " + ex.Message, Severity.Error);
+        }
+        finally
+        {
+            isCalculating = false;
+        }
+    }
+
+    private async Task<EarthMagneticData?> CalculateEarthMagneticFieldAsync(double latitude, double longitude, double depth, DateTimeOffset dateTime)
+    {
+        Guid orderId = Guid.NewGuid();
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        EarthMagneticFieldCalculationOrder order = new()
+        {
+            MetaInfo = CreateMetaInfo(orderId, "EarthMagneticFieldCalculationOrder/"),
+            Name = $"Earth geomagnetic field {orderId}",
+            Description = "Temporary single earth geomagnetic field calculation.",
+            CreationDate = now,
+            LastModificationDate = now,
+            CalculationMethod = calculationMethod,
+            RawEarthMagneticFieldTable = new EarthMagneticField
+            {
+                MetaInfo = CreateMetaInfo(Guid.NewGuid(), "EarthMagneticField/"),
+                Name = $"Raw earth geomagnetic field {orderId}",
+                Description = "Temporary single earth geomagnetic field calculation input.",
+                CreationDate = now,
+                LastModificationDate = now,
+                Type = EarthMagneticFieldType.Raw,
+                EarthMagneticFieldData =
+                [
+                    new EarthMagneticData
+                    {
+                        Latitude = latitude,
+                        Longitude = longitude,
+                        Depth = depth,
+                        Year = ToFractionalYear(dateTime)
+                    }
+                ]
+            },
+            CompletedEarthMagneticFieldTable = new EarthMagneticField
+            {
+                MetaInfo = CreateMetaInfo(Guid.NewGuid(), "EarthMagneticField/"),
+                Name = $"Completed earth geomagnetic field {orderId}",
+                Description = "Temporary single earth geomagnetic field calculation result.",
+                CreationDate = now,
+                LastModificationDate = now,
+                Type = EarthMagneticFieldType.Completed,
+                EarthMagneticFieldData = []
+            }
+        };
+
+        try
+        {
+            await Api.ClientEarthMagneticField.PostEarthMagneticFieldCalculationOrderAsync(order);
+            EarthMagneticFieldCalculationOrder completed = await Api.ClientEarthMagneticField.GetEarthMagneticFieldCalculationOrderByIdAsync(orderId);
+            return completed.CompletedEarthMagneticFieldTable?.EarthMagneticFieldData?.FirstOrDefault();
+        }
+        finally
+        {
+            try
+            {
+                await Api.ClientEarthMagneticField.DeleteEarthMagneticFieldCalculationOrderByIdAsync(orderId);
+            }
+            catch
+            {
+            }
+        }
+    }
+
+    private MetaInfo CreateMetaInfo(Guid id, string endPoint) =>
+        new()
+        {
+            ID = id,
+            HttpHostName = Api.HostNameEarthMagneticField,
+            HttpHostBasePath = Api.HostBasePathEarthMagneticField,
+            HttpEndPoint = endPoint
+        };
+
+    private static bool TryParseDateTime(string? value, out DateTimeOffset dateTime)
+    {
+        if (DateTimeOffset.TryParse(value, System.Globalization.CultureInfo.CurrentCulture, System.Globalization.DateTimeStyles.AssumeLocal, out dateTime))
+        {
+            return true;
+        }
+
+        return DateTimeOffset.TryParse(value, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeLocal, out dateTime);
+    }
+
+    private static double ToFractionalYear(DateTimeOffset dateTime)
+    {
+        DateTimeOffset utc = dateTime.ToUniversalTime();
+        DateTimeOffset start = new(utc.Year, 1, 1, 0, 0, 0, TimeSpan.Zero);
+        DateTimeOffset end = start.AddYears(1);
+        return utc.Year + (utc - start).TotalDays / (end - start).TotalDays;
+    }
+
+    private void ClearResults()
+    {
+        dip = null;
+        declination = null;
+        horizontalMagneticField = null;
+        fieldIntensity = null;
+    }
+}

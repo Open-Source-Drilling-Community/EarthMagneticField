@@ -1,0 +1,301 @@
+﻿@using System.Reflection.Metadata
+@inject ILogger<MudInputWithUnitAdornment> logger
+@inject IEarthMagneticFieldAPIUtils Api
+@inject ISnackbar Snackbar
+
+
+<MudPaper Class="my-2 mx-2 py-2 my-2" Style="@($"background:{DataUtils.FLOATING_COLOUR};")">
+    <MudPaper Class="my-1 mx-1 py-1 my-1">
+        <MudToolBar>
+            <MudText Typo="Typo.h6" Class="mx-2 px-2">Calculation Order</MudText>
+            <MudButton StartIcon="@Icons.Material.Filled.SaveAs" Variant="Variant.Filled" IconColor="Color.Primary" OnClick="SaveAsEarthMagneticFieldCalculationOrder">Save new</MudButton>
+            @if (EarthMagneticFieldCalculationOrderId != null)
+            {
+                <MudButton StartIcon="@Icons.Material.Filled.Save" Variant="Variant.Filled" IconColor="Color.Primary" OnClick="SaveEarthMagneticFieldCalculationOrder">Save</MudButton>
+            }
+            <MudSpacer />
+            <MudButton StartIcon="@Icons.Material.Filled.Close" Variant="Variant.Filled" IconColor="Color.Error" OnClick="SendMessage">Close</MudButton>                
+        </MudToolBar>
+        <MudDivider Class="py-2 my-2"/>
+        <MudPaper Class="mx-2 my-2 px-2 mx-2">
+            <MudGrid>            
+                <MudItem xs="6">
+                    <MudTextField Class="py-2 my-2" @bind-Value="currentEarthMagneticFieldCalculationOrder.Name" Label="Name" Required="true" For="@(() => currentEarthMagneticFieldCalculationOrder.Name)" />    
+                </MudItem>
+                <MudItem xs="6">
+                    <MudTextField Class="py-2 my-2" @bind-Value="currentEarthMagneticFieldCalculationOrder.Description" Label="Description" For="@(() => currentEarthMagneticFieldCalculationOrder.Description)" />   
+                </MudItem>            
+                <MudItem xs="6">                
+                    <MudRadioGroup @bind-Value="currentEarthMagneticFieldCalculationOrder.CalculationMethod" T="EarthMagneticFieldCalculationMethod">
+                        <MudRadio Value="EarthMagneticFieldCalculationMethod.WMM2025" Color="Color.Primary">
+                            WMM2025 — Recommended for years 2025–2029
+                        </MudRadio>
+                        <MudRadio Value="EarthMagneticFieldCalculationMethod.IGRJ14" Color="Color.Default">
+                            IGRF14 — Recommended for years prior to 2025
+                        </MudRadio>
+                    </MudRadioGroup>
+                </MudItem>
+            </MudGrid>
+                 <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" Class="mx-2 my-2">
+                <MudTabPanel Text="Table">
+                    <MudTable T=EarthMagneticData Items="currentEarthMagneticFieldCalculationOrder.RawEarthMagneticFieldTable.EarthMagneticFieldData">
+                        <HeaderContent>
+                            <MudTh>Year [mm/yyyy]</MudTh>
+                            <MudTh>Lattitude [@(Parent.GetUnitLabel("PlaneAngleGeodesic"))]</MudTh>
+                            <MudTh>Longitude [@(Parent.GetUnitLabel("PlaneAngleGeodesic"))]</MudTh>
+                            <MudTh>Depth [@(Parent.GetUnitLabel("DepthDrilling"))]</MudTh>
+                            <MudTh>
+                                <MudButton StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" IconColor="Color.Primary" OnClick="AddEarthMagneticData">Add</MudButton>
+                                <MudButton StartIcon="@Icons.Material.Filled.Remove" Variant="Variant.Filled" IconColor="Color.Error" OnClick="RemoveEarthMagneticData">Remove</MudButton>
+                            </MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd>
+                                <MudGrid>
+                                    <MudItem xs="3">
+                                        <MudNumericField T="int" Value="GetMonthInt(context.Year)" Max="12" Min="1" Step="1" ValueChanged="val => UpdateMonth(val, context)"/>
+                                    </MudItem>
+                                    <MudItem xs="1">
+                                        <MudText Typo="Typo.body1"><b>/</b></MudText>
+                                    </MudItem>
+                                    <MudItem xs="5">
+                                        <MudNumericField T="int" Value="GetYearInt(context.Year)" Max="2029" Min="1984" Step="1" ValueChanged="val => UpdateYear(val, context)"/>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudTd>
+                            <MudTd>
+                                <MudInputWithUnit
+                                    SIValue="context.Latitude"
+                                    QuantityName="PlaneAngleGeodesic"
+                                    SIValueChanged="@(val => context.Latitude = val)"/>
+                            </MudTd>
+                            <MudTd>
+                                <MudInputWithUnit
+                                    SIValue="context.Longitude"
+                                    QuantityName="PlaneAngleGeodesic"
+                                    SIValueChanged="@(val => context.Longitude = val)"/>
+                            </MudTd>
+                            <MudTd>
+                                <MudInputWithUnit
+                                    SIValue="context.Depth"
+                                    QuantityName="DepthDrilling"
+                                    SIValueChanged="@(val => context.Depth = val)"/>
+                            </MudTd>
+                            <MudTd></MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudTabPanel>
+
+                <MudTabPanel Text="Range">
+                    <MudPaper Class="mx-2 my-2 px-2 py-2">
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.subtitle1" Class="mb-2">Latitude Range</MudText>
+                            </MudItem>
+                            <MudItem xs="4">
+                                <MudText Typo="Typo.caption" Class="mb-1">Min</MudText>
+                                <MudInputWithUnitAdornment
+                                    SIValue="rangeLatMin"
+                                    QuantityName="PlaneAngleGeodesic"
+                                    SIValueChanged="@(val => rangeLatMin = val)"                                    />
+                            </MudItem>
+                            <MudItem xs="4">
+                                <MudText Typo="Typo.caption" Class="mb-1">Max</MudText>
+                                <MudInputWithUnitAdornment
+                                    SIValue="rangeLatMax"
+                                    QuantityName="PlaneAngleGeodesic"
+                                    SIValueChanged="@(val => rangeLatMax = val)"/>
+                            </MudItem>
+                            <MudItem xs="4">
+                                <MudNumericField T="int" @bind-Value="rangeLatSteps" Label="Steps" Min="1" Max="1000" Step="1"/>
+                            </MudItem>
+
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.subtitle1" Class="mt-2 mb-2">Longitude Range</MudText>
+                            </MudItem>
+                            <MudItem xs="4">
+                                <MudText Typo="Typo.caption" Class="mb-1">Min</MudText>
+                                <MudInputWithUnitAdornment
+                                    SIValue="rangeLonMin"
+                                    QuantityName="PlaneAngleGeodesic"
+                                    SIValueChanged="@(val => rangeLonMin = val)"/>
+                            </MudItem>
+                            <MudItem xs="4">
+                                <MudText Typo="Typo.caption" Class="mb-1">Max</MudText>
+                                <MudInputWithUnitAdornment
+                                    SIValue="rangeLonMax"
+                                    QuantityName="PlaneAngleGeodesic"
+                                    SIValueChanged="@(val => rangeLonMax = val)"/>
+                            </MudItem>
+                            <MudItem xs="4">
+                                <MudNumericField T="int" @bind-Value="rangeLonSteps" Label="Steps" Min="1" Max="1000" Step="1"/>
+                            </MudItem>
+
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.subtitle1" Class="mt-2 mb-2">Depth &amp; Date</MudText>
+                            </MudItem>
+                            <MudItem xs="4">
+                                <MudText Typo="Typo.caption" Class="mb-1">Depth</MudText>
+                                <MudInputWithUnitAdornment
+                                    SIValue="rangeDepth"
+                                    QuantityName="DepthDrilling"
+                                    SIValueChanged="@(val => rangeDepth = val)"/>
+                            </MudItem>
+                            <MudItem xs="4">
+                                <MudNumericField T="int" @bind-Value="rangeYearInt" Label="Year" Max="2029" Min="1984" Step="1"/>
+                            </MudItem>
+                            <MudItem xs="4" Class="d-flex align-end">
+                                <MudButton StartIcon="@Icons.Material.Filled.Refresh" Variant="Variant.Filled" IconColor="Color.Primary" OnClick="GenerateFromRange" Class="mb-1">
+                                    Generate Table (@(rangeLatSteps * rangeLonSteps) points)
+                                </MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                </MudTabPanel>
+            </MudTabs>
+            
+        </MudPaper>
+    </MudPaper>
+</MudPaper>
+
+@code{
+     [CascadingParameter]
+    private MudUnitAndReferenceChoiceTag? Parent { get; set; }
+    [Parameter]
+    public Guid? EarthMagneticFieldCalculationOrderId { get; set; }
+    [Parameter]
+    public EventCallback ValueChanged {get; set;}    
+
+    private List<EarthMagneticField> unprocessedEarthMagneticFieldList = new();
+    private EarthMagneticFieldCalculationOrder currentEarthMagneticFieldCalculationOrder = PseudoConstructors.ConstructEarthMagneticFieldCalculationOrder();
+    private double rangeLatMin = 0.0;
+    private double rangeLatMax = 0.0;
+    private int rangeLatSteps = 5;
+    private double rangeLonMin = 0.0;
+    private double rangeLonMax = 0.0;
+    private int rangeLonSteps = 5;
+    private double rangeDepth = 0.0;
+    private int rangeYearInt = 2025;
+    protected override async Task OnInitializedAsync()
+    {
+        if (EarthMagneticFieldCalculationOrderId != null)
+        {
+            currentEarthMagneticFieldCalculationOrder = await Api.ClientEarthMagneticField.GetEarthMagneticFieldCalculationOrderByIdAsync(EarthMagneticFieldCalculationOrderId.Value);
+        }
+        unprocessedEarthMagneticFieldList = await Api.ClientEarthMagneticField.GetAllCompletedEarthMagneticFieldAsync(false);
+    
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    //Send message to parent component
+    private async Task SendMessage()
+    {
+        await ValueChanged.InvokeAsync();
+    }  
+    //Add/Edit panel controls
+    private async Task SaveEarthMagneticFieldCalculationOrder()
+    {
+        try
+        {
+            if (EarthMagneticFieldCalculationOrderId != null)
+            {
+                currentEarthMagneticFieldCalculationOrder.LastModificationDate = DateTimeOffset.UtcNow;            
+                await Api.ClientEarthMagneticField.PutEarthMagneticFieldCalculationOrderByIdAsync((Guid) EarthMagneticFieldCalculationOrderId, currentEarthMagneticFieldCalculationOrder);
+                Snackbar.Add("EarthMagneticFieldCalculationOrder updated successfully", Severity.Success);
+                await SendMessage();
+            }
+            else
+            {
+                Snackbar.Add("EarthMagneticFieldCalculationOrder not found for edition", Severity.Success);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error saving EarthMagneticFieldCalculationOrder");
+            Snackbar.Add("Error saving EarthMagneticFieldCalculationOrder: " + ex.Message, Severity.Warning);
+        }
+    }
+    private async Task SaveAsEarthMagneticFieldCalculationOrder()
+    {
+        try
+        {
+            currentEarthMagneticFieldCalculationOrder.MetaInfo.ID = Guid.NewGuid();
+            currentEarthMagneticFieldCalculationOrder.CreationDate = DateTimeOffset.UtcNow;
+            currentEarthMagneticFieldCalculationOrder.LastModificationDate = DateTimeOffset.UtcNow;
+            await Api.ClientEarthMagneticField.PostEarthMagneticFieldCalculationOrderAsync(currentEarthMagneticFieldCalculationOrder);
+            Snackbar.Add("EarthMagneticFieldCalculationOrder updated successfully", Severity.Success);
+            await SendMessage();                        
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error saving EarthMagneticFieldCalculationOrder");
+            Snackbar.Add("Error saving EarthMagneticFieldCalculationOrder: " + ex.Message, Severity.Warning);
+        }
+    }      
+
+    private void UpdateYear(int val, EarthMagneticData data)
+    {
+        data.Year = (double)val + ((double)GetMonthInt(data.Year) - 1) / 12.0;
+    }
+
+    private void UpdateMonth(int val, EarthMagneticData data)
+    {
+        data.Year = (double)GetYearInt(data.Year) + ((double)val - 1) / 12.0;
+    }
+
+    private int GetYearInt(double yearDouble) => (int)Math.Floor(yearDouble);
+    private int GetMonthInt(double yearDouble) => (int)Math.Round((yearDouble - Math.Floor(yearDouble)) * 12) + 1;
+    private string DoubleToYear(double yearDouble) => $"{GetMonthInt(yearDouble)} / {GetYearInt(yearDouble)}";
+    private void AddEarthMagneticData()
+    {
+        currentEarthMagneticFieldCalculationOrder.RawEarthMagneticFieldTable.EarthMagneticFieldData.Add(PseudoConstructors.ConstructEarthMagneticData());
+    }
+
+    private void RemoveEarthMagneticData()
+    {
+        if (currentEarthMagneticFieldCalculationOrder.RawEarthMagneticFieldTable.EarthMagneticFieldData.Count > 1)
+        {
+            currentEarthMagneticFieldCalculationOrder.
+                RawEarthMagneticFieldTable.
+                    EarthMagneticFieldData.
+                        RemoveAt(currentEarthMagneticFieldCalculationOrder.
+                                    RawEarthMagneticFieldTable.EarthMagneticFieldData.Count - 1);
+        }
+        else
+        {
+            Snackbar.Add("At least one data point is required", Severity.Warning);
+        }
+    }
+    private void GenerateFromRange()
+    {
+        double year = (double)rangeYearInt;
+
+        currentEarthMagneticFieldCalculationOrder.RawEarthMagneticFieldTable.EarthMagneticFieldData.Clear();
+
+        for (int i = 0; i < rangeLatSteps; i++)
+        {
+            double lat = rangeLatSteps > 1
+                ? rangeLatMin + (rangeLatMax - rangeLatMin) * i / (rangeLatSteps - 1)
+                : rangeLatMin;
+
+            for (int j = 0; j < rangeLonSteps; j++)
+            {
+                double lon = rangeLonSteps > 1
+                    ? rangeLonMin + (rangeLonMax - rangeLonMin) * j / (rangeLonSteps - 1)
+                    : rangeLonMin;
+
+                currentEarthMagneticFieldCalculationOrder.RawEarthMagneticFieldTable.EarthMagneticFieldData.Add(new EarthMagneticData
+                {
+                    Latitude = lat,
+                    Longitude = lon,
+                    Depth = rangeDepth,
+                    Year = year
+                });
+            }
+        }
+    }
+
+    //Update unit system
+    private void ManageUnits(){}        
+}

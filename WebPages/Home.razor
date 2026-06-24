@@ -1,0 +1,53 @@
+@page "/Home"
+<MudText Class="mx-4 px-4 ym-4 pm-4" Typo="Typo.h2">Home</MudText>
+<MudDivider Class="mb-4 pb-4"/>
+<MudText Class="mx-4 px-4 ym-4 pm-4" Typo="Typo.h5">Introduction</MudText>
+<MudText Class="mx-6 px-6 ym-4 pm-4" Typo="Typo.body1" Style="max-width: 1400px;">
+    This WebApp is a simple User Interface for the Microservice that calculates the Earth's magnetic field at a given latitute, longitude, depth and a given fractional year.
+    The calculations are based on either the WMM2025 or the IGRF14, which is user defined. It makes use of the GeographicLib.NET environment to do so.
+</MudText>
+<br/>
+<MudGrid  Class="d-flex justify-center flex-grow-1 gap-4" Style="max-width: 1400px;">
+    <MudItem xs="12">
+        <MudText Class="mx-4 px-4 ym-4 pm-4" Typo="Typo.h5">Resources</MudText>
+    </MudItem>
+    <MudItem xs="3">
+        <MudLink Href="https://github.com/noelex/GeographicLib.NET" Target="_blank">
+           <img src="/videos/world.svg" style="height: 2.0em; vertical-align: middle;" class="mr-1"/>      
+            GeographicLib.NET
+        </MudLink>
+    </MudItem>
+    <MudItem xs="3">
+        <MudLink Href="https://www.ncei.noaa.gov/products/world-magnetic-model" Target="_blank">
+            <img src="/videos/magnet.svg" style="height: 2.0em; vertical-align: middle;" class="mr-1"/>
+            WMM2025
+        </MudLink>
+    </MudItem>
+    <MudItem xs="3">
+        <MudLink Href="https://www.ncei.noaa.gov/products/international-magnetic-reference-field" Target="_blank">
+                <img src="/videos/magnet.svg" style="height: 2.0em; vertical-align: middle;" class="mr-1"/>
+                IGRF14
+        </MudLink>
+    </MudItem>
+</MudGrid>
+@code{
+    private bool showAddTutorial = true;
+    private bool showUploadTutorial = true;
+    private bool showViewTutorial = true;
+
+    private void ShowHideAddTutorial()
+    {
+        showAddTutorial = !showAddTutorial;
+    }
+    private string HideColors(bool expandBool)
+    {
+        if (expandBool)
+        {
+            return Colors.Indigo.Lighten1;
+        }
+        else
+        {
+            return Colors.Indigo.Darken4;
+        }
+    }
+}

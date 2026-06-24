@@ -1,0 +1,211 @@
+@inject ILogger<MudInputWithUnitAdornment> logger
+@inject IEarthMagneticFieldAPIUtils Api
+@inject ISnackbar Snackbar
+
+
+<MudPaper Class="ma-3 pa-2" Style="@($"background:{DataUtils.FLOATING_COLOUR};")">
+    <MudPaper Class="ma-1 pa-0">
+        <MudToolBar>
+            <MudText Typo="Typo.h5" Class="mx-2">Edit Earth Magnetic Field</MudText>
+            <MudSpacer />
+            <MudButton StartIcon="@Icons.Material.Filled.Close" Variant="Variant.Filled" IconColor="Color.Error" OnClick="SendMessage" Class="ml-2">Close</MudButton>
+        </MudToolBar>
+        <MudDivider Class="my-2"/>
+        <MudPaper Class="mx-3 my-2 px-3 py-2" Elevation="0">
+            <MudGrid Class="ma-0">
+                <MudItem xs="6">
+                    <MudTextField Class="py-2 my-2" @bind-Value="currentEarthMagneticField.Name" Label="Name" Required="true" For="@(() => currentEarthMagneticField.Name)" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudTextField Class="py-2 my-2" @bind-Value="currentEarthMagneticField.Description" Label="Description" For="@(() => currentEarthMagneticField.Description)" />
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+        <MudDivider Class="my-3"/>
+
+        <MudTable T=EarthMagneticData Items="currentEarthMagneticField.EarthMagneticFieldData">
+            <HeaderContent>
+                <MudTh>Year [mm/yyyy]</MudTh>
+                <MudTh>Lattitude [@(Parent.GetUnitLabel("PlaneAngleGeodesic"))]</MudTh>
+                <MudTh>Longitude [@(Parent.GetUnitLabel("PlaneAngleGeodesic"))]</MudTh>
+                <MudTh>Depth [@(Parent.GetUnitLabel("DepthDrilling"))]</MudTh>
+                <MudTh>Dip [@(Parent.GetUnitLabel("PlaneAngle"))]</MudTh>
+                <MudTh>Horizontal Field [@(Parent.GetUnitLabel("EarthMagneticFluxDensity"))]</MudTh>
+                <MudTh>Declination [@(Parent.GetUnitLabel("PlaneAngle"))]</MudTh>
+                <MudTh>Magnitude [@(Parent.GetUnitLabel("EarthMagneticFluxDensity"))]</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    <MudText>@DoubleToYear(context.Year)</MudText>
+                </MudTd>
+                <MudTd>
+                    <MudText>@(FormatDouble(context.Latitude, "PlaneAngleGeodesic"))</MudText>
+                </MudTd>
+                <MudTd>
+                    <MudText>@(FormatDouble(context.Longitude, "PlaneAngleGeodesic"))</MudText>
+                </MudTd>
+                <MudTd>
+                    <MudText>@(FormatDouble(context.Depth, "DepthDrilling"))</MudText>
+                </MudTd>
+                <MudTd>
+                    <MudText>@(FormatDouble(context.Dip, "PlaneAngle"))</MudText>
+                </MudTd>
+                <MudTd>
+                    <MudText>@(FormatDouble(context.HorizontalMagneticField, "EarthMagneticFluxDensity"))</MudText>
+                </MudTd>
+                <MudTd>
+                    <MudText>@(FormatDouble(context.Declination, "PlaneAngle"))</MudText>
+                </MudTd>
+                <MudTd>
+                    <MudText>@(FormatDouble(context.FieldIntensity, "EarthMagneticFluxDensity"))</MudText>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+        
+    </MudPaper>
+</MudPaper>
+
+@code{
+    [CascadingParameter]
+    private MudUnitAndReferenceChoiceTag? Parent { get; set; }
+    [Parameter]
+    public Guid? EarthMagneticFieldId { get; set; }
+    [Parameter]
+    public EventCallback ValueChanged {get; set;}
+
+    private EarthMagneticField currentEarthMagneticField = PseudoConstructors.ConstructEarthMagneticField();
+    private MudForm form;
+
+    // Range tab state (SI units)
+    private double rangeLatMin = 0.0;
+    private double rangeLatMax = 0.0;
+    private int rangeLatSteps = 5;
+    private double rangeLonMin = 0.0;
+    private double rangeLonMax = 0.0;
+    private int rangeLonSteps = 5;
+    private double rangeDepth = 0.0;
+    private int rangeYearInt = 2025;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (EarthMagneticFieldId != null)
+        {
+            currentEarthMagneticField = await Api.ClientEarthMagneticField.GetEarthMagneticFieldByIdAsync(EarthMagneticFieldId.Value);
+        }
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    private async Task SendMessage()
+    {
+        await ValueChanged.InvokeAsync();
+    }
+
+    private string FormatDouble(double? valNullable, string quantityName)
+    {
+        double val = Parent.FromSI(valNullable, quantityName) ?? double.NaN;
+        return val.ToString("F2");
+    }
+
+    private int GetYearInt(double yearDouble) => (int)Math.Floor(yearDouble);
+    private int GetMonthInt(double yearDouble) => (int)Math.Round((yearDouble - Math.Floor(yearDouble)) * 12) + 1;
+    private string DoubleToYear(double yearDouble) => $"{GetMonthInt(yearDouble)} / {GetYearInt(yearDouble)}";
+
+    private async Task SaveEarthMagneticField()
+    {
+        try
+        {
+            if (EarthMagneticFieldId != null)
+            {
+                currentEarthMagneticField.LastModificationDate = DateTimeOffset.UtcNow;
+                await Api.ClientEarthMagneticField.PutEarthMagneticFieldByIdAsync((Guid) EarthMagneticFieldId, currentEarthMagneticField);
+                Snackbar.Add("EarthMagneticField updated successfully", Severity.Success);
+                await SendMessage();
+            }
+            else
+            {
+                Snackbar.Add("EarthMagneticField not found for edition", Severity.Success);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error saving EarthMagneticField");
+            Snackbar.Add("Error saving EarthMagneticField: " + ex.Message, Severity.Warning);
+        }
+    }
+
+    private async Task SaveAsEarthMagneticField()
+    {
+        try
+        {
+            currentEarthMagneticField.MetaInfo.ID = Guid.NewGuid();
+            currentEarthMagneticField.CreationDate = DateTimeOffset.UtcNow;
+            currentEarthMagneticField.LastModificationDate = DateTimeOffset.UtcNow;
+            await Api.ClientEarthMagneticField.PostEarthMagneticFieldAsync(currentEarthMagneticField);
+            Snackbar.Add("EarthMagneticField updated successfully", Severity.Success);
+            await SendMessage();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error saving EarthMagneticField");
+            Snackbar.Add("Error saving EarthMagneticField: " + ex.Message, Severity.Warning);
+        }
+    }
+
+    private void ManageUnits(){}
+
+    private void UpdateYear(int val, EarthMagneticData data)
+    {
+        data.Year = (double)val + ((double)GetMonthInt(data.Year) - 1) / 12.0;
+    }
+
+    private void UpdateMonth(int val, EarthMagneticData data)
+    {
+        data.Year = (double)GetYearInt(data.Year) + ((double)val - 1) / 12.0;
+    }
+
+    private void AddEarthMagneticData()
+    {
+        currentEarthMagneticField.EarthMagneticFieldData.Add(PseudoConstructors.ConstructEarthMagneticData());
+    }
+
+    private void RemoveEarthMagneticData()
+    {
+        if (currentEarthMagneticField.EarthMagneticFieldData.Count > 1)
+        {
+            currentEarthMagneticField.EarthMagneticFieldData.RemoveAt(currentEarthMagneticField.EarthMagneticFieldData.Count - 1);
+        }
+        else
+        {
+            Snackbar.Add("At least one data point is required", Severity.Warning);
+        }
+    }
+
+    private void GenerateFromRange()
+    {
+        double year = (double)rangeYearInt;
+
+        currentEarthMagneticField.EarthMagneticFieldData.Clear();
+
+        for (int i = 0; i < rangeLatSteps; i++)
+        {
+            double lat = rangeLatSteps > 1
+                ? rangeLatMin + (rangeLatMax - rangeLatMin) * i / (rangeLatSteps - 1)
+                : rangeLatMin;
+
+            for (int j = 0; j < rangeLonSteps; j++)
+            {
+                double lon = rangeLonSteps > 1
+                    ? rangeLonMin + (rangeLonMax - rangeLonMin) * j / (rangeLonSteps - 1)
+                    : rangeLonMin;
+
+                currentEarthMagneticField.EarthMagneticFieldData.Add(new EarthMagneticData
+                {
+                    Latitude = lat,
+                    Longitude = lon,
+                    Depth = rangeDepth,
+                    Year = year
+                });
+            }
+        }
+    }
+}

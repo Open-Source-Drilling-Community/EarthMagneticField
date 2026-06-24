@@ -1,0 +1,635 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+    "version": "1.0"
+  },
+  "paths": {
+    "/EarthMagneticField": {
+      "get": {
+        "tags": [
+          "EarthMagneticField"
+        ],
+        "operationId": "GetAllEarthMagneticFieldId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "EarthMagneticField"
+        ],
+        "operationId": "PostEarthMagneticField",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticField"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticField"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticField"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/EarthMagneticField/MetaInfo": {
+      "get": {
+        "tags": [
+          "EarthMagneticField"
+        ],
+        "operationId": "GetAllEarthMagneticFieldMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OSDC.DotnetLibraries.General.DataManagement.MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/EarthMagneticField/{id}": {
+      "get": {
+        "tags": [
+          "EarthMagneticField"
+        ],
+        "operationId": "GetEarthMagneticFieldById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticField"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "EarthMagneticField"
+        ],
+        "operationId": "PutEarthMagneticFieldById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticField"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticField"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticField"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "EarthMagneticField"
+        ],
+        "operationId": "DeleteEarthMagneticFieldById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/EarthMagneticField/HeavyData": {
+      "get": {
+        "tags": [
+          "EarthMagneticField"
+        ],
+        "operationId": "GetAllEarthMagneticField",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticField"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/EarthMagneticField/Completed": {
+      "get": {
+        "tags": [
+          "EarthMagneticField"
+        ],
+        "operationId": "GetAllCompletedEarthMagneticField",
+        "parameters": [
+          {
+            "name": "isCompleted",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticField"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/EarthMagneticFieldCalculationOrder": {
+      "get": {
+        "tags": [
+          "EarthMagneticFieldCalculationOrder"
+        ],
+        "operationId": "GetAllEarthMagneticFieldCalculationOrderId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "EarthMagneticFieldCalculationOrder"
+        ],
+        "operationId": "PostEarthMagneticFieldCalculationOrder",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticFieldCalculationOrder"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticFieldCalculationOrder"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticFieldCalculationOrder"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/EarthMagneticFieldCalculationOrder/MetaInfo": {
+      "get": {
+        "tags": [
+          "EarthMagneticFieldCalculationOrder"
+        ],
+        "operationId": "GetAllEarthMagneticFieldCalculationOrderMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OSDC.DotnetLibraries.General.DataManagement.MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/EarthMagneticFieldCalculationOrder/{id}": {
+      "get": {
+        "tags": [
+          "EarthMagneticFieldCalculationOrder"
+        ],
+        "operationId": "GetEarthMagneticFieldCalculationOrderById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticFieldCalculationOrder"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "EarthMagneticFieldCalculationOrder"
+        ],
+        "operationId": "PutEarthMagneticFieldCalculationOrderById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticFieldCalculationOrder"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticFieldCalculationOrder"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticFieldCalculationOrder"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "EarthMagneticFieldCalculationOrder"
+        ],
+        "operationId": "DeleteEarthMagneticFieldCalculationOrderById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/EarthMagneticFieldCalculationOrder/LightData": {
+      "get": {
+        "tags": [
+          "EarthMagneticFieldCalculationOrder"
+        ],
+        "operationId": "GetAllEarthMagneticFieldCalculationOrderLight",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticFieldCalculationOrderLight"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/EarthMagneticFieldCalculationOrder/HeavyData": {
+      "get": {
+        "tags": [
+          "EarthMagneticFieldCalculationOrder"
+        ],
+        "operationId": "GetAllEarthMagneticFieldCalculationOrder",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticFieldCalculationOrder"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "NORCE.Drilling.EarthMagneticField.Model.EarthMagneticData": {
+        "type": "object",
+        "properties": {
+          "Latitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "Longitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "Depth": {
+            "type": "number",
+            "format": "double"
+          },
+          "Year": {
+            "type": "number",
+            "format": "double"
+          },
+          "Dip": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "FieldIntensity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Declination": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "HorizontalMagneticField": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "NORCE.Drilling.EarthMagneticField.Model.EarthMagneticField": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/OSDC.DotnetLibraries.General.DataManagement.MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "EarthMagneticFieldData": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticData"
+            },
+            "nullable": true
+          },
+          "Type": {
+            "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticFieldType"
+          }
+        },
+        "additionalProperties": false
+      },
+      "NORCE.Drilling.EarthMagneticField.Model.EarthMagneticFieldCalculationMethod": {
+        "enum": [
+          "WMM2025",
+          "IGRJ14"
+        ],
+        "type": "string"
+      },
+      "NORCE.Drilling.EarthMagneticField.Model.EarthMagneticFieldCalculationOrder": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/OSDC.DotnetLibraries.General.DataManagement.MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "CalculationMethod": {
+            "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticFieldCalculationMethod"
+          },
+          "RawEarthMagneticFieldTable": {
+            "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticField"
+          },
+          "CompletedEarthMagneticFieldTable": {
+            "$ref": "#/components/schemas/NORCE.Drilling.EarthMagneticField.Model.EarthMagneticField"
+          }
+        },
+        "additionalProperties": false
+      },
+      "NORCE.Drilling.EarthMagneticField.Model.EarthMagneticFieldCalculationOrderLight": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/OSDC.DotnetLibraries.General.DataManagement.MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "NORCE.Drilling.EarthMagneticField.Model.EarthMagneticFieldType": {
+        "enum": [
+          "Raw",
+          "Completed"
+        ],
+        "type": "string"
+      },
+      "OSDC.DotnetLibraries.General.DataManagement.MetaInfo": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "HttpHostName": {
+            "type": "string",
+            "nullable": true
+          },
+          "HttpHostBasePath": {
+            "type": "string",
+            "nullable": true
+          },
+          "HttpEndPoint": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
