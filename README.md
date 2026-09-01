@@ -1,6 +1,6 @@
 # OSDC Earth Magnetic Field
 
-OSDC Earth Magnetic Field is a stateless .NET 8 microservice that evaluates WMM2025 or IGRF14 for batches of WGS84 positions and UTC instants. It provides REST and MCP interfaces, a generated shared client, reusable unit-aware Blazor pages, a WebApp, Docker images, and Helm charts. There is no database, calculation-order resource, GUID workflow, or persisted result.
+OSDC Earth Magnetic Field is a .NET 8 microservice with stateless WMM2025 and IGRF14 calculations for batches of WGS84 positions and UTC instants. It provides REST and MCP interfaces, a generated shared client, reusable unit-aware Blazor pages, a WebApp, Docker images, and Helm charts. There is no database, calculation-order resource, GUID workflow, or persisted calculation result; cumulative usage counters are persisted separately.
 
 ## Solution structure
 
@@ -42,8 +42,10 @@ Local endpoints:
 
 - discovery/model information: `http://localhost:58952/EarthMagneticField/api/EarthMagneticField`
 - evaluation: `POST http://localhost:58952/EarthMagneticField/api/EarthMagneticField/Evaluate`
+- usage statistics: `http://localhost:58952/EarthMagneticField/api/EarthMagneticFieldUsageStatistics`
 - MCP Streamable HTTP: `http://localhost:58952/EarthMagneticField/api/mcp`
 - health: `http://localhost:58952/EarthMagneticField/api/health/live`
+- readiness: `http://localhost:58952/EarthMagneticField/api/health/ready`
 - metrics: `http://localhost:58952/EarthMagneticField/api/metrics`
 - Swagger: `http://localhost:58952/EarthMagneticField/api/swagger`
 
@@ -55,7 +57,7 @@ Invoke-RestMethod -Method Post -ContentType application/json -Body $body `
   -Uri http://localhost:58952/EarthMagneticField/api/EarthMagneticField/Evaluate
 ```
 
-Run the WebApp with `dotnet run --project WebApp/WebApp.csproj`, then browse to `http://localhost:58954/EarthMagneticField/webapp/Home`.
+For a WebApp connected to that local service, set `EarthMagneticFieldHostURL=http://localhost:58952/`, run `dotnet run --project WebApp/WebApp.csproj`, then browse to `http://localhost:58954/EarthMagneticField/webapp/Home`. The checked-in Development settings use `https://dev.digiwells.no/` instead.
 
 ## MCP tools
 
@@ -66,6 +68,8 @@ The server publishes exactly three underscore-named tools:
 - `earth_magnetic_field_evaluate`
 
 `tools/list` includes complete descriptions and strict input/output JSON Schemas. Usage statistics remain available through REST and metrics but are intentionally excluded from MCP.
+
+Usage-counter snapshots are stored atomically in `/home/EarthMagneticField.UsageStatistics.json`, restored during startup, written every 30 seconds when changed, and flushed during graceful shutdown. They survive pod replacement when the `/home` persistent volume is retained; an abrupt process or node failure can lose changes since the last snapshot. Override the defaults with `EarthMagneticField__UsageStatisticsFile` and `EarthMagneticField__UsageStatisticsSaveIntervalSeconds`. The JSON snapshot is a single-writer design, so keep the service at one replica.
 
 ## Generation and validation
 
@@ -93,11 +97,12 @@ The Docker GitHub Action uses private repository secrets `DOCKERHUB_USERNAME` an
 ```powershell
 docker build -f Service/Dockerfile -t digiwells/osdcdrillingearthmagneticfieldservice:local .
 docker build -f WebApp/Dockerfile -t digiwells/osdcdrillingearthmagneticfieldwebappclient:local .
+docker run --rm -p 8080:8080 -v earthmagneticfield-home:/home digiwells/osdcdrillingearthmagneticfieldservice:local
 helm upgrade --install osdcearthmagneticfieldservice Service/charts/osdcdrillingearthmagneticfieldservice
 helm upgrade --install osdcearthmagneticfieldwebapp WebApp/charts/osdcdrillingearthmagneticfieldwebappclient
 ```
 
-The charts create no persistence volume or PodDisruptionBudget. See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for model and GeographicLib attribution.
+The Service chart creates a PVC mounted at `/home` by default for statistics persistence; set `persistence.existingClaim` to reuse a managed volume. The charts create no PodDisruptionBudget. See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for model and GeographicLib attribution.
 
 Author: Eric Cayeux
 

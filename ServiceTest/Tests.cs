@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -14,11 +15,13 @@ public class Tests
     private WebApplicationFactory<Program> factory_ = null!;
     private HttpClient httpClient_ = null!;
     private Client generatedClient_ = null!;
+    private string statisticsFile_ = null!;
 
     [SetUp]
     public void Setup()
     {
-        factory_ = new WebApplicationFactory<Program>();
+        statisticsFile_ = Path.Combine(Path.GetTempPath(), "earthmagneticfield-tests", Guid.NewGuid().ToString(), "statistics.json");
+        factory_ = CreateFactory(statisticsFile_);
         httpClient_ = factory_.CreateClient();
         generatedClient_ = new Client("http://localhost/EarthMagneticField/api/", httpClient_);
     }
@@ -28,6 +31,12 @@ public class Tests
     {
         httpClient_.Dispose();
         factory_.Dispose();
+        string? directory = Path.GetDirectoryName(statisticsFile_);
+        if (directory is not null && Directory.Exists(directory) &&
+            Path.GetFullPath(directory).StartsWith(Path.GetFullPath(Path.GetTempPath()), StringComparison.OrdinalIgnoreCase))
+        {
+            Directory.Delete(directory, true);
+        }
     }
 
     [TestCase(EarthMagneticFieldModel.WMM2025, 2026)]
@@ -51,6 +60,46 @@ public class Tests
             Assert.That(response.Samples.First().Input.DateTimeUtc.Offset, Is.EqualTo(TimeSpan.Zero));
             Assert.That(response.Model.Model, Is.EqualTo(model));
         });
+    }
+
+    [Test]
+    public async Task UsageStatisticsSurviveServiceRestart()
+    {
+        string statisticsFile = Path.Combine(Path.GetTempPath(), "earthmagneticfield-restart-tests",
+            Guid.NewGuid().ToString(), "statistics.json");
+        try
+        {
+            DateTimeOffset startedAt;
+            using (var firstFactory = CreateFactory(statisticsFile))
+            using (HttpClient firstHttpClient = firstFactory.CreateClient())
+            {
+                var firstClient = new Client("http://localhost/EarthMagneticField/api/", firstHttpClient);
+                await firstClient.GetEarthMagneticFieldEntryAsync();
+                UsageStatisticsEarthMagneticField beforeRestart =
+                    await firstClient.GetEarthMagneticFieldUsageStatisticsAsync();
+                startedAt = beforeRestart.StartedAt;
+                Assert.That(beforeRestart.ModelInfoRequests, Is.GreaterThanOrEqualTo(1));
+            }
+
+            Assert.That(File.Exists(statisticsFile), Is.True);
+
+            using var secondFactory = CreateFactory(statisticsFile);
+            using HttpClient secondHttpClient = secondFactory.CreateClient();
+            var secondClient = new Client("http://localhost/EarthMagneticField/api/", secondHttpClient);
+            UsageStatisticsEarthMagneticField restored =
+                await secondClient.GetEarthMagneticFieldUsageStatisticsAsync();
+            Assert.Multiple(() =>
+            {
+                Assert.That(restored.ModelInfoRequests, Is.GreaterThanOrEqualTo(1));
+                Assert.That(restored.StartedAt, Is.EqualTo(startedAt));
+                Assert.That(restored.Scope, Is.EqualTo("persistent-service"));
+            });
+        }
+        finally
+        {
+            string? directory = Path.GetDirectoryName(statisticsFile);
+            if (directory is not null && Directory.Exists(directory)) Directory.Delete(directory, true);
+        }
     }
 
     [Test]
@@ -197,4 +246,11 @@ public class Tests
             .Single(line => line.StartsWith("data:", StringComparison.Ordinal));
         return JsonDocument.Parse(dataLine["data:".Length..].Trim());
     }
+
+    private static WebApplicationFactory<Program> CreateFactory(string statisticsFile) =>
+        new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+        {
+            builder.UseSetting("EarthMagneticField:UsageStatisticsFile", statisticsFile);
+            builder.UseSetting("EarthMagneticField:UsageStatisticsSaveIntervalSeconds", "3600");
+        });
 }

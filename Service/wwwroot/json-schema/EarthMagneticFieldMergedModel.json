@@ -104,7 +104,7 @@
         "tags": [
           "EarthMagneticFieldUsageStatistics"
         ],
-        "summary": "Returns in-memory usage counters for this service replica. This operation is intentionally not exposed as an MCP tool.",
+        "summary": "Returns cumulative usage counters persisted by this service. This operation is intentionally not exposed as an MCP tool.",
         "operationId": "GetEarthMagneticFieldUsageStatistics",
         "responses": {
           "200": {

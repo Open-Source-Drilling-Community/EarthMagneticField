@@ -1,6 +1,6 @@
 # Model
 
-`Model` contains the typed stateless contracts, atomic validation, usage counters, installed-model provenance, and `EarthMagneticFieldEvaluator`.
+`Model` contains the typed stateless calculation contracts, atomic validation, thread-safe cumulative usage counters that the Service can snapshot and restore, installed-model provenance, and `EarthMagneticFieldEvaluator`.
 
 The evaluator loads WMM2025 and IGRF14 once, accepts WGS84 radians, positive-down ellipsoidal depth, and explicit UTC, and returns north-east-down SI teslas plus horizontal/total intensity and declination/inclination in radians. GeographicLib boundary conversions are private.
 

@@ -12,13 +12,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOptions<EarthMagneticFieldServiceOptions>()
     .Bind(builder.Configuration.GetSection(EarthMagneticFieldServiceOptions.SectionName))
     .Validate(value => value.MaximumSamplesPerRequest > 0, "MaximumSamplesPerRequest must be positive.")
+    .Validate(value => !string.IsNullOrWhiteSpace(value.UsageStatisticsFile) && value.UsageStatisticsSaveIntervalSeconds > 0,
+        "Usage-statistics file and save interval must be configured.")
     .ValidateOnStart();
 builder.Services.AddSingleton(provider =>
 {
     EarthMagneticFieldServiceOptions options = provider.GetRequiredService<IOptions<EarthMagneticFieldServiceOptions>>().Value;
     return new EarthMagneticFieldEvaluator(options.ModelDirectory);
 });
-builder.Services.AddSingleton<UsageStatisticsEarthMagneticField>();
+builder.Services.AddSingleton(provider => new UsageStatisticsStore(
+    provider.GetRequiredService<IOptions<EarthMagneticFieldServiceOptions>>().Value,
+    provider.GetRequiredService<IHostEnvironment>(),
+    provider.GetRequiredService<ILogger<UsageStatisticsStore>>()));
+builder.Services.AddSingleton(provider => provider.GetRequiredService<UsageStatisticsStore>().Statistics);
+builder.Services.AddHostedService(provider => provider.GetRequiredService<UsageStatisticsStore>());
 builder.Services.AddControllers().AddJsonOptions(options => JsonSettings.ApplyTo(options.JsonSerializerOptions));
 builder.Services.Configure<Microsoft.AspNetCore.Mvc.ApiBehaviorOptions>(options =>
     options.SuppressModelStateInvalidFilter = true);

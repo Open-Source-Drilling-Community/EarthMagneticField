@@ -15,7 +15,9 @@ podAnnotations:
   prometheus.io/path: /EarthMagneticField/api/metrics
   prometheus.io/port: "8080"
 podLabels: {}
-podSecurityContext: {}
+podSecurityContext:
+  fsGroup: 1654
+  fsGroupChangePolicy: OnRootMismatch
 securityContext: {}
 service:
   type: ClusterIP
@@ -24,6 +26,14 @@ service:
     description: "A stateless WMM2025 and IGRF14 geomagnetic-field evaluation microservice"
 earthMagneticField:
   maximumSamplesPerRequest: 10000
+  usageStatisticsFile: /home/EarthMagneticField.UsageStatistics.json
+  usageStatisticsSaveIntervalSeconds: 30
+persistence:
+  enabled: true
+  existingClaim: ""
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 1Gi
 resources: {}
 autoscaling:
   enabled: false
