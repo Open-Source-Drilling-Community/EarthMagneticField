@@ -1,5 +1,7 @@
 # OSDC.Drilling.EarthMagneticField.WebPages
 
+This release targets MudBlazor 9.9.0 and the matching OSDC shared web component packages.
+
 Reusable Blazor pages for stateless Earth magnetic-field evaluation:
 
 - `/EarthMagneticFieldCalculation`: unit-aware WMM2025/IGRF14 evaluation with explicit UTC and north-east-down output.
