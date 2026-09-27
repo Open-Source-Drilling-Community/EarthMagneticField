@@ -1,6 +1,8 @@
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
+using OSDC.DotnetLibraries.Drilling.SemanticCatalogue;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -251,6 +253,65 @@ public class Tests
             Assert.That(structured.GetProperty("Error").GetString(), Is.EqualTo("invalid_request"));
             Assert.That(structured.GetProperty("Errors")[0].GetProperty("Property").GetString(), Is.EqualTo("DateTimeUtc"));
         });
+    }
+
+    [Test]
+    public async Task RestAndMcpPublishTheCuratedModelBindingsConsistently()
+    {
+        using JsonDocument rest = JsonDocument.Parse(await httpClient_.GetStringAsync("/EarthMagneticField/api/swagger/merged/swagger.json"));
+        using var request = McpRequest("""{"jsonrpc":"2.0","id":10,"method":"tools/list","params":{}}""");
+        using HttpResponseMessage response = await httpClient_.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+        using JsonDocument mcp = ParseSse(await response.Content.ReadAsStringAsync());
+        JsonElement tools = mcp.RootElement.GetProperty("result").GetProperty("tools");
+        JsonElement evaluate = tools.EnumerateArray().Single(t => t.GetProperty("name").GetString() == "earth_magnetic_field_evaluate");
+        JsonElement discovery = tools.EnumerateArray().Single(t => t.GetProperty("name").GetString() == "earth_magnetic_field_get_model_info").GetProperty("outputSchema");
+        JsonElement input = evaluate.GetProperty("inputSchema"), output = evaluate.GetProperty("outputSchema");
+        JsonElement definitions = output.GetProperty("$defs");
+        var pairs = new (Type Model, JsonElement Mcp)[]
+        {
+            (typeof(Model.EvaluateEarthMagneticFieldRequest), input),
+            (typeof(Model.EvaluateEarthMagneticFieldResponse), output),
+            (typeof(Model.EarthMagneticFieldEvaluationPoint), input.GetProperty("properties").GetProperty("Samples").GetProperty("items")),
+            (typeof(Model.EarthMagneticFieldEvaluationPoint), definitions.GetProperty("input")),
+            (typeof(Model.EarthMagneticFieldSample), definitions.GetProperty("result")),
+            (typeof(Model.EarthMagneticModelInfo), definitions.GetProperty("modelInfo")),
+            (typeof(Model.EarthMagneticModelInfo), discovery.GetProperty("$defs").GetProperty("modelInfo")),
+            (typeof(Model.EarthMagneticFieldServiceInfo), discovery)
+        };
+        int checkedBindings = 0;
+        foreach (var pair in pairs)
+        {
+            JsonElement restSchema = rest.RootElement.GetProperty("components").GetProperty("schemas").GetProperty(pair.Model.Name);
+            Check(pair.Model, restSchema, pair.Mcp);
+            foreach (var property in pair.Model.GetProperties())
+                Check(property, restSchema.GetProperty("properties").GetProperty(property.Name), pair.Mcp.GetProperty("properties").GetProperty(property.Name));
+        }
+        Assert.That(checkedBindings, Is.GreaterThan(50));
+        Assert.That(JsonNode.DeepEquals(JsonNode.Parse(definitions.GetProperty("modelInfo").GetRawText()),
+            JsonNode.Parse(discovery.GetProperty("$defs").GetProperty("modelInfo").GetRawText())), Is.True);
+        JsonElement fields = definitions.GetProperty("modelInfo").GetProperty("properties");
+        Assert.That(fields.GetProperty("MetadataSHA256").GetProperty("x-osdc-semantic").GetProperty("role").GetString(), Is.EqualTo(Concepts.ModelMetadataFile));
+        Assert.That(fields.GetProperty("CoefficientSHA256").GetProperty("x-osdc-semantic").GetProperty("role").GetString(), Is.EqualTo(Concepts.CoefficientFile));
+        Assert.That(fields.GetProperty("MinimumUtc").GetProperty("x-osdc-semantic").GetProperty("reference").GetString(), Is.EqualTo(Concepts.Utc));
+        Assert.That(fields.GetProperty("MinimumUtc").GetProperty("x-osdc-semantic").TryGetProperty("physicalQuantity", out _), Is.False);
+        JsonElement magnetic = definitions.GetProperty("result").GetProperty("properties");
+        Assert.That(magnetic.GetProperty("North").GetProperty("x-osdc-semantic").GetProperty("physicalQuantity").GetProperty("name").GetString(), Is.EqualTo("EarthMagneticFluxDensity"));
+        Assert.That(magnetic.GetProperty("MagneticDip").GetProperty("x-osdc-semantic").GetProperty("concept").GetString(), Is.EqualTo(Concepts.MagneticDip));
+
+        void Check(System.Reflection.MemberInfo member, JsonElement restSchema, JsonElement mcpSchema)
+        {
+            JsonObject? expected = SemanticMetadata.For(member);
+            if (expected is null) return;
+            foreach (JsonElement schema in new[] { restSchema, mcpSchema })
+            {
+                JsonElement annotation = schema.GetProperty("x-osdc-semantic");
+                Assert.That(annotation.GetProperty("catalogueVersion").GetString(), Is.EqualTo("0.3.0"));
+                Assert.That(annotation.GetProperty("curationStatus").GetString(), Is.EqualTo("Reviewed"));
+                Assert.That(JsonNode.DeepEquals(expected, JsonNode.Parse(annotation.GetRawText())), Is.True, member.Name);
+            }
+            checkedBindings++;
+        }
     }
 
     [Test]

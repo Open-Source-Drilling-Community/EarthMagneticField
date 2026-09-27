@@ -14,7 +14,7 @@ OSDC Earth Magnetic Field is a .NET 8 microservice with stateless WMM2025 and IG
 
 ## Public conventions
 
-The next semantic-catalogue increment is documented in the sibling DotNetLibraries repository at `OSDC.DotnetLibraries.General/OSDC.DotnetLibraries.Drilling.SemanticCatalogue/CURATION-EARTHMAGNETICFIELD-2026-09-26.md`. It distinguishes magnetic dip, magnetic flux density, evaluation instants and model validity bounds. This is a curation proposal; this service does not yet reference SemanticCatalogue or publish its semantic annotations.
+The Model references published `OSDC.DotnetLibraries.Drilling.SemanticCatalogue` **0.3.0**. Provider-owned attributes bind the curated vocabulary to fields; REST/OpenAPI and MCP publish matching `x-osdc-semantic` annotations. See [semantic bindings](SEMANTICS.md) for scope, quantity/reference conventions and validation.
 
 - `Latitude`: WGS84 geodetic latitude in SI radians, `[-π/2, π/2]`.
 - `Longitude`: WGS84 longitude in SI radians, `[-π, π]`.

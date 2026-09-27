@@ -1,3 +1,4 @@
+using OSDC.DotnetLibraries.Drilling.SemanticCatalogue;
 namespace OSDC.Drilling.EarthMagneticField.Model;
 
 /// <summary>Installed models and public conventions of the stateless service.</summary>
@@ -9,5 +10,6 @@ public class EarthMagneticFieldServiceInfo
     public string TimeConvention { get; set; } = "UTC";
     public string DepthReference { get; set; } = "WGS84 reference ellipsoid";
     public string DepthPositiveDirection { get; set; } = "down";
+    [Semantic(Concepts.GeomagneticModelProvenance, Role = Concepts.Provenance)]
     public List<EarthMagneticModelInfo> Models { get; set; } = [];
 }

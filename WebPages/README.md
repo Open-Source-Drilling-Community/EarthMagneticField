@@ -17,3 +17,5 @@ Author: Eric Cayeux
 Company: NORCE Research
 
 Magnetic dip uses the `MagneticDip` result property and the label “Magnetic dip”. It is in SI radians, positive downward from horizontal, and nullable when total magnetic flux density is zero. Service and client releases must agree on this property name.
+
+HorizontalIntensity and TotalIntensity are displayed as horizontal/total magnetic flux density (EarthMagneticFluxDensity, SI teslas). MagneticDip and Declination use PlaneAngleDrilling in SI radians. Physical quantities agree with the service semantic annotations.

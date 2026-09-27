@@ -40,6 +40,7 @@ builder.Services.AddSwaggerGen(configuration =>
         Description = "Stateless WMM2025 and IGRF14 evaluation using UTC, WGS84 SI coordinates, and north-east-down magnetic flux density in teslas."
     });
     configuration.CustomSchemaIds(type => type.FullName);
+    configuration.SchemaFilter<SemanticSchemaFilter>();
     foreach (string assemblyName in new[] { "Service", "Model" })
     {
         string xmlPath = Path.Combine(AppContext.BaseDirectory, assemblyName + ".xml");

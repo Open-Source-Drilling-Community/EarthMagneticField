@@ -9,3 +9,5 @@ Validation covers coordinates, finite depth, model-specific height/depth and UTC
 Author: Eric Cayeux
 
 Company: NORCE Research
+
+The Model references SemanticCatalogue 0.3.0 from NuGet. Semantic attributes declare concepts, roles and references on engineering DTOs; they do not change serialization or validation. UTC instants have no duration quantity. SHA-256 digests share one noun with distinct source-file roles.

@@ -7,3 +7,5 @@ Author: Eric Cayeux
 Company: NORCE Research
 
 Magnetic dip uses the `MagneticDip` result property and the label “Magnetic dip”. It is in SI radians, positive downward from horizontal, and nullable when total magnetic flux density is zero. Service and client releases must agree on this property name.
+
+Regenerated OpenAPI retains SemanticCatalogue 0.3.0 annotations. Generated client properties retain their existing wire names, including MagneticDip. Semantic metadata describes the schemas; generated DTOs do not need a direct SemanticCatalogue dependency.

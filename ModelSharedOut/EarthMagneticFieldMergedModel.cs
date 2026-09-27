@@ -741,60 +741,117 @@ namespace OSDC.Drilling.EarthMagneticField.ModelShared
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<EarthMagneticFieldModel>))]
         public EarthMagneticFieldModel Model { get; set; }
 
+        /// <summary>
+        /// Name of the installed scientific model.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("Name")]
         public string Name { get; set; }
 
+        /// <summary>
+        /// Scientific model identifier, distinct from the provider selection token.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("ID")]
         public string ID { get; set; }
 
+        /// <summary>
+        /// Human-readable description of the installed model.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("Description")]
         public string Description { get; set; }
 
+        /// <summary>
+        /// Publication calendar date, serialized as a nullable date-time; not a UTC evaluation instant.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("ReleaseDate")]
         public System.DateTimeOffset? ReleaseDate { get; set; }
 
+        /// <summary>
+        /// Inclusive lower bound of the supported evaluation-time domain, in UTC.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("MinimumUtc")]
         public System.DateTimeOffset MinimumUtc { get; set; }
 
+        /// <summary>
+        /// Inclusive upper bound of the supported evaluation-time domain, in UTC.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("MaximumUtc")]
         public System.DateTimeOffset MaximumUtc { get; set; }
 
+        /// <summary>
+        /// Inclusive lower bound of supported ellipsoidal depth in SI metres, positive down from WGS84.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("MinimumDepth")]
         public double MinimumDepth { get; set; }
 
+        /// <summary>
+        /// Inclusive upper bound of supported ellipsoidal depth in SI metres, positive down from WGS84.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("MaximumDepth")]
         public double MaximumDepth { get; set; }
 
+        /// <summary>
+        /// Maximum spherical-harmonic degree represented by the model; not an angle.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("Degree")]
         public int Degree { get; set; }
 
+        /// <summary>
+        /// Maximum spherical-harmonic order represented by the model; not an angle.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("Order")]
         public int Order { get; set; }
 
+        /// <summary>
+        /// Version of the calculation implementation used for reproducibility.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("GeographicLibVersion")]
         public string GeographicLibVersion { get; set; }
 
+        /// <summary>
+        /// Reference ellipsoid used for the geodetic position.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("ReferenceEllipsoid")]
         public string ReferenceEllipsoid { get; set; }
 
+        /// <summary>
+        /// Local north-east-down frame; down is opposite ellipsoid-normal up.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("CoordinateFrame")]
         public string CoordinateFrame { get; set; }
 
+        /// <summary>
+        /// Wire unit for magnetic flux density: tesla, not magnetic field strength in amperes per metre.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("MagneticFluxDensityUnit")]
         public string MagneticFluxDensityUnit { get; set; }
 
+        /// <summary>
+        /// Wire unit for angles: radian.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("AngleUnit")]
         public string AngleUnit { get; set; }
 
+        /// <summary>
+        /// Depth increases downward from the reference ellipsoid.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("DepthPositiveDirection")]
         public string DepthPositiveDirection { get; set; }
 
+        /// <summary>
+        /// Whether the installed evaluator supports concurrent evaluations.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("ConcurrentEvaluationEnabled")]
         public bool ConcurrentEvaluationEnabled { get; set; }
 
+        /// <summary>
+        /// SHA-256 digest of the complete model metadata file bytes, encoded as 64 lowercase hexadecimal characters.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("MetadataSHA256")]
         public string MetadataSHA256 { get; set; }
 
+        /// <summary>
+        /// SHA-256 digest of the complete coefficient file bytes, encoded as 64 lowercase hexadecimal characters.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("CoefficientSHA256")]
         public string CoefficientSHA256 { get; set; }
 

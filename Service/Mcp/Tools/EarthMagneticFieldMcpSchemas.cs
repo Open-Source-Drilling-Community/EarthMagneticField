@@ -1,10 +1,39 @@
 using System.Text.Json.Nodes;
+using OSDC.Drilling.EarthMagneticField.Model;
+using OSDC.DotnetLibraries.Drilling.SemanticCatalogue;
 
 namespace OSDC.Drilling.EarthMagneticField.Service.Mcp.Tools;
 
 internal static class EarthMagneticFieldMcpSchemas
 {
-    public static JsonNode EvaluateInput(int maximumSamples) => JsonNode.Parse($$"""
+    public static JsonNode EvaluateInput(int maximumSamples)
+    {
+        var schema = (JsonObject)BuildEvaluateInput(maximumSamples);
+        SemanticMetadata.AnnotateObject(schema, typeof(EvaluateEarthMagneticFieldRequest));
+        SemanticMetadata.AnnotateObject((JsonObject)schema["properties"]!["Samples"]!["items"]!, typeof(EarthMagneticFieldEvaluationPoint));
+        return schema;
+    }
+
+    public static JsonNode EvaluateOutput()
+    {
+        var schema = (JsonObject)BuildEvaluateOutput();
+        SemanticMetadata.AnnotateObject(schema, typeof(EvaluateEarthMagneticFieldResponse));
+        SemanticMetadata.AnnotateObject((JsonObject)schema["$defs"]!["input"]!, typeof(EarthMagneticFieldEvaluationPoint));
+        SemanticMetadata.AnnotateObject((JsonObject)schema["$defs"]!["result"]!, typeof(EarthMagneticFieldSample));
+        SemanticMetadata.AnnotateObject((JsonObject)schema["$defs"]!["modelInfo"]!, typeof(EarthMagneticModelInfo));
+        return schema;
+    }
+
+    public static JsonNode ServiceInfo()
+    {
+        var schema = (JsonObject)BuildServiceInfo();
+        // Use exactly the same model schema and annotations for discovery and evaluation.
+        schema["$defs"]!["modelInfo"] = EvaluateOutput()["$defs"]!["modelInfo"]!.DeepClone();
+        SemanticMetadata.AnnotateObject(schema, typeof(EarthMagneticFieldServiceInfo));
+        return schema;
+    }
+
+    private static JsonNode BuildEvaluateInput(int maximumSamples) => JsonNode.Parse($$"""
     {
       "type":"object",
       "properties":{
@@ -31,7 +60,7 @@ internal static class EarthMagneticFieldMcpSchemas
     }
     """)!;
 
-    public static JsonNode EvaluateOutput() => JsonNode.Parse("""
+    private static JsonNode BuildEvaluateOutput() => JsonNode.Parse("""
     {
       "type":"object",
       "properties":{
@@ -68,12 +97,12 @@ internal static class EarthMagneticFieldMcpSchemas
         "modelInfo":{
           "type":"object",
           "properties":{
-            "Model":{"type":"string","enum":["WMM2025","IGRF14"]},"Name":{"type":"string"},"ID":{"type":"string"},"Description":{"type":"string"},
-            "ReleaseDate":{"type":["string","null"],"format":"date-time"},"MinimumUtc":{"type":"string","format":"date-time"},"MaximumUtc":{"type":"string","format":"date-time"},
-            "MinimumDepth":{"type":"number"},"MaximumDepth":{"type":"number"},"Degree":{"type":"integer"},"Order":{"type":"integer"},"GeographicLibVersion":{"type":"string"},
-            "ReferenceEllipsoid":{"type":"string","const":"WGS84"},"CoordinateFrame":{"type":"string","const":"north-east-down"},"MagneticFluxDensityUnit":{"type":"string","const":"tesla"},
-            "AngleUnit":{"type":"string","const":"radian"},"DepthPositiveDirection":{"type":"string","const":"down"},"ConcurrentEvaluationEnabled":{"type":"boolean"},
-            "MetadataSHA256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"CoefficientSHA256":{"type":"string","pattern":"^[0-9a-f]{64}$"}
+            "Model":{"description":"Provider model-selection token, distinct from the scientific model identifier.","type":"string","enum":["WMM2025","IGRF14"]},"Name":{"description":"Name of the installed scientific model.","type":"string"},"ID":{"description":"Scientific model identifier, distinct from the provider selection token.","type":"string"},"Description":{"description":"Human-readable description of the installed model.","type":"string"},
+            "ReleaseDate":{"description":"Publication calendar date, serialized as a nullable date-time; not a UTC evaluation instant.","type":["string","null"],"format":"date-time"},"MinimumUtc":{"description":"Inclusive lower bound of the supported evaluation-time domain, in UTC.","type":"string","format":"date-time"},"MaximumUtc":{"description":"Inclusive upper bound of the supported evaluation-time domain, in UTC.","type":"string","format":"date-time"},
+            "MinimumDepth":{"description":"Inclusive lower bound of supported ellipsoidal depth in SI metres, positive down from WGS84.","type":"number"},"MaximumDepth":{"description":"Inclusive upper bound of supported ellipsoidal depth in SI metres, positive down from WGS84.","type":"number"},"Degree":{"description":"Maximum spherical-harmonic degree represented by the model; not an angle.","type":"integer"},"Order":{"description":"Maximum spherical-harmonic order represented by the model; not an angle.","type":"integer"},"GeographicLibVersion":{"description":"Version of the calculation implementation used for reproducibility.","type":"string"},
+            "ReferenceEllipsoid":{"description":"Reference ellipsoid used for the geodetic position.","type":"string","const":"WGS84"},"CoordinateFrame":{"description":"Local north-east-down frame; down is opposite ellipsoid-normal up.","type":"string","const":"north-east-down"},"MagneticFluxDensityUnit":{"description":"Wire unit for magnetic flux density: tesla, not magnetic field strength in amperes per metre.","type":"string","const":"tesla"},
+            "AngleUnit":{"description":"Wire unit for angles: radian.","type":"string","const":"radian"},"DepthPositiveDirection":{"description":"Depth increases downward from the reference ellipsoid.","type":"string","const":"down"},"ConcurrentEvaluationEnabled":{"description":"Whether the installed evaluator supports concurrent evaluations.","type":"boolean"},
+            "MetadataSHA256":{"description":"SHA-256 digest of the complete model metadata file bytes, encoded as 64 lowercase hexadecimal characters.","type":"string","pattern":"^[0-9a-f]{64}$"},"CoefficientSHA256":{"description":"SHA-256 digest of the complete coefficient file bytes, encoded as 64 lowercase hexadecimal characters.","type":"string","pattern":"^[0-9a-f]{64}$"}
           },
           "required":["Model","Name","ID","Description","ReleaseDate","MinimumUtc","MaximumUtc","MinimumDepth","MaximumDepth","Degree","Order","GeographicLibVersion","ReferenceEllipsoid","CoordinateFrame","MagneticFluxDensityUnit","AngleUnit","DepthPositiveDirection","ConcurrentEvaluationEnabled","MetadataSHA256","CoefficientSHA256"],
           "additionalProperties":false
@@ -82,7 +111,7 @@ internal static class EarthMagneticFieldMcpSchemas
     }
     """)!;
 
-    public static JsonNode ServiceInfo() => JsonNode.Parse("""
+    private static JsonNode BuildServiceInfo() => JsonNode.Parse("""
     {
       "type":"object",
       "properties":{
@@ -96,21 +125,7 @@ internal static class EarthMagneticFieldMcpSchemas
       },
       "required":["Name","Description","CoordinateFrame","TimeConvention","DepthReference","DepthPositiveDirection","Models"],
       "additionalProperties":false,
-      "$defs":{
-        "modelInfo":{
-          "type":"object",
-          "properties":{
-            "Model":{"type":"string","enum":["WMM2025","IGRF14"]},"Name":{"type":"string"},"ID":{"type":"string"},"Description":{"type":"string"},
-            "ReleaseDate":{"type":["string","null"],"format":"date-time"},"MinimumUtc":{"type":"string","format":"date-time"},"MaximumUtc":{"type":"string","format":"date-time"},
-            "MinimumDepth":{"type":"number"},"MaximumDepth":{"type":"number"},"Degree":{"type":"integer"},"Order":{"type":"integer"},"GeographicLibVersion":{"type":"string"},
-            "ReferenceEllipsoid":{"type":"string","const":"WGS84"},"CoordinateFrame":{"type":"string","const":"north-east-down"},"MagneticFluxDensityUnit":{"type":"string","const":"tesla"},
-            "AngleUnit":{"type":"string","const":"radian"},"DepthPositiveDirection":{"type":"string","const":"down"},"ConcurrentEvaluationEnabled":{"type":"boolean"},
-            "MetadataSHA256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"CoefficientSHA256":{"type":"string","pattern":"^[0-9a-f]{64}$"}
-          },
-          "required":["Model","Name","ID","Description","ReleaseDate","MinimumUtc","MaximumUtc","MinimumDepth","MaximumDepth","Degree","Order","GeographicLibVersion","ReferenceEllipsoid","CoordinateFrame","MagneticFluxDensityUnit","AngleUnit","DepthPositiveDirection","ConcurrentEvaluationEnabled","MetadataSHA256","CoefficientSHA256"],
-          "additionalProperties":false
-        }
-      }
+      "$defs":{}
     }
     """)!;
 }

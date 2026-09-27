@@ -13,3 +13,5 @@ Author: Eric Cayeux
 Company: NORCE Research
 
 Magnetic dip uses the `MagneticDip` result property and the label “Magnetic dip”. It is in SI radians, positive downward from horizontal, and nullable when total magnetic flux density is zero. Service and client releases must agree on this property name.
+
+The host uses regenerated clients for the annotated service contract. SemanticCatalogue is a service Model dependency resolved from NuGet; Docker requires no sibling DotNetLibraries checkout.
