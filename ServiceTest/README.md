@@ -7,3 +7,7 @@ Run `dotnet test ServiceTest/ServiceTest.csproj`.
 Author: Eric Cayeux
 
 Company: NORCE Research
+
+The merged OpenAPI document advertises the API root (`/EarthMagneticField/api`) as its server URL, excluding the schema route. Service tests verify that its advertised URL and operation path resolve to a working endpoint.
+
+Magnetic-dip checks verify the `MagneticDip` calculation and contract name; service tests cover REST, MCP, OpenAPI and the generated client, including removal of the former result property.

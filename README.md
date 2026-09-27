@@ -14,13 +14,17 @@ OSDC Earth Magnetic Field is a .NET 8 microservice with stateless WMM2025 and IG
 
 ## Public conventions
 
+The next semantic-catalogue increment is documented in the sibling DotNetLibraries repository at `OSDC.DotnetLibraries.General/OSDC.DotnetLibraries.Drilling.SemanticCatalogue/CURATION-EARTHMAGNETICFIELD-2026-09-26.md`. It distinguishes magnetic dip, magnetic flux density, evaluation instants and model validity bounds. This is a curation proposal; this service does not yet reference SemanticCatalogue or publish its semantic annotations.
+
 - `Latitude`: WGS84 geodetic latitude in SI radians, `[-π/2, π/2]`.
 - `Longitude`: WGS84 longitude in SI radians, `[-π, π]`.
 - `Depth`: SI metres, positive downward from the WGS84 reference ellipsoid.
 - `DateTimeUtc`: explicit UTC timestamp containing `Z` or `+00:00`.
 - `North`, `East`, and `Down`: magnetic flux density in SI teslas, positive geodetic north, east, and down.
 - `Declination`: SI radians, positive east of geodetic north.
-- `Inclination`: SI radians, positive downward from horizontal.
+- `MagneticDip`: SI radians, positive downward from horizontal; null when total magnetic flux density is zero.
+
+The result property formerly named `Inclination` is now `MagneticDip` in REST, MCP and generated clients. This intentional contract rename has no compatibility alias. Update consuming clients and release the Service and WebApp together.
 
 GeographicLib expects degrees, positive-up ellipsoidal height, fractional year, and returns east-north-up nanoteslas. Conversion, reordering, and the vertical sign change occur only at the library boundary.
 

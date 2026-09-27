@@ -621,10 +621,10 @@ namespace OSDC.Drilling.EarthMagneticField.ModelShared
         public double? Declination { get; set; }
 
         /// <summary>
-        /// Inclination in SI radians, positive downward from horizontal; null when total intensity is zero.
+        /// Magnetic dip in SI radians, positive downward from horizontal; null when total intensity is zero.
         /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("Inclination")]
-        public double? Inclination { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("MagneticDip")]
+        public double? MagneticDip { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
 

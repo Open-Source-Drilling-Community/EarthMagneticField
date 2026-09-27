@@ -59,7 +59,29 @@ public class Tests
             Assert.That(response.Samples.First().TotalIntensity, Is.LessThan(1e-3));
             Assert.That(response.Samples.First().Input.DateTimeUtc.Offset, Is.EqualTo(TimeSpan.Zero));
             Assert.That(response.Model.Model, Is.EqualTo(model));
+            EarthMagneticFieldSample sample = response.Samples.First();
+            Assert.That(sample.MagneticDip, Is.EqualTo(Math.Atan2(sample.Down, sample.HorizontalIntensity)).Within(1e-15));
         });
+    }
+
+    [Test]
+    public async Task RestAndOpenApiExposeMagneticDipWithoutTheOldProperty()
+    {
+        using var content = new StringContent(
+            """{"Model":"WMM2025","Samples":[{"Latitude":0.5,"Longitude":1.0,"Depth":500,"DateTimeUtc":"2026-06-01T00:00:00Z"}]}""",
+            Encoding.UTF8, "application/json");
+        using HttpResponseMessage response = await httpClient_.PostAsync("/EarthMagneticField/api/EarthMagneticField/Evaluate", content);
+        response.EnsureSuccessStatusCode();
+        using JsonDocument result = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        JsonElement sample = result.RootElement.GetProperty("Samples")[0];
+        Assert.That(sample.GetProperty("MagneticDip").ValueKind, Is.EqualTo(JsonValueKind.Number));
+        Assert.That(sample.TryGetProperty("Inclination", out _), Is.False);
+
+        using JsonDocument schema = JsonDocument.Parse(await httpClient_.GetStringAsync("/EarthMagneticField/api/swagger/merged/swagger.json"));
+        JsonElement properties = schema.RootElement.GetProperty("components").GetProperty("schemas")
+            .GetProperty("EarthMagneticFieldSample").GetProperty("properties");
+        Assert.That(properties.GetProperty("MagneticDip").GetProperty("nullable").GetBoolean(), Is.True);
+        Assert.That(properties.TryGetProperty("Inclination", out _), Is.False);
     }
 
     [Test]
@@ -170,6 +192,10 @@ public class Tests
             Assert.That(tools.EnumerateArray().All(tool => tool.TryGetProperty("outputSchema", out _)), Is.True);
             Assert.That(tools.ToString(), Does.Not.Contain("usage_statistics").IgnoreCase);
             Assert.That(description, Does.Contain("north-east-down"));
+            JsonElement resultSchema = evaluate.GetProperty("outputSchema").GetProperty("$defs").GetProperty("result");
+            Assert.That(resultSchema.GetProperty("properties").TryGetProperty("MagneticDip", out _), Is.True);
+            Assert.That(resultSchema.GetProperty("properties").TryGetProperty("Inclination", out _), Is.False);
+            Assert.That(resultSchema.GetProperty("required").EnumerateArray().Select(x => x.GetString()), Does.Contain("MagneticDip"));
             Assert.That(description, Does.Contain("UTC"));
             Assert.That(description, Does.Contain("no GUID"));
             Assert.That(evaluate.GetProperty("inputSchema").GetProperty("properties")
@@ -199,6 +225,9 @@ public class Tests
             Assert.That(sample.TryGetProperty("North", out _), Is.True);
             Assert.That(sample.TryGetProperty("East", out _), Is.True);
             Assert.That(sample.TryGetProperty("Down", out _), Is.True);
+            Assert.That(sample.TryGetProperty("Inclination", out _), Is.False);
+            Assert.That(sample.GetProperty("MagneticDip").GetDouble(),
+                Is.EqualTo(Math.Atan2(sample.GetProperty("Down").GetDouble(), sample.GetProperty("HorizontalIntensity").GetDouble())).Within(1e-15));
             Assert.That(sample.GetProperty("TotalIntensity").GetDouble(), Is.GreaterThan(1e-6));
         });
     }
@@ -222,6 +251,21 @@ public class Tests
             Assert.That(structured.GetProperty("Error").GetString(), Is.EqualTo("invalid_request"));
             Assert.That(structured.GetProperty("Errors")[0].GetProperty("Property").GetString(), Is.EqualTo("DateTimeUtc"));
         });
+    }
+
+    [Test]
+    public async Task SwaggerServerUrlResolvesToTheApiRoot()
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/EarthMagneticField/api/swagger/merged/swagger.json");
+        request.Headers.Add("X-Forwarded-Host", "example.test");
+        using HttpResponseMessage response = await httpClient_.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+        using JsonDocument document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        string server = document.RootElement.GetProperty("servers")[0].GetProperty("url").GetString()!;
+        Assert.That(server, Is.EqualTo("https://example.test/EarthMagneticField/api"));
+        Assert.That(document.RootElement.GetProperty("paths").TryGetProperty("/EarthMagneticField", out _), Is.True);
+        using HttpResponseMessage entry = await httpClient_.GetAsync(new Uri(server + "/EarthMagneticField").AbsolutePath);
+        Assert.That(entry.StatusCode, Is.EqualTo(HttpStatusCode.OK));
     }
 
     [TestCase("/EarthMagneticField/api/health/live")]

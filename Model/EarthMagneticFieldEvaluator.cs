@@ -77,7 +77,7 @@ public sealed class EarthMagneticFieldEvaluator
                 HorizontalIntensity = horizontal,
                 TotalIntensity = total,
                 Declination = horizontal > 0 ? Math.Atan2(east, north) : null,
-                Inclination = total > 0 ? Math.Atan2(down, horizontal) : null
+                MagneticDip = total > 0 ? Math.Atan2(down, horizontal) : null
             });
         }
         return response;

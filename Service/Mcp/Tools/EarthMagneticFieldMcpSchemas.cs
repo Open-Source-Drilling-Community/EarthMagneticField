@@ -61,9 +61,9 @@ internal static class EarthMagneticFieldMcpSchemas
             "HorizontalIntensity":{"type":"number","minimum":0,"description":"Horizontal magnitude in SI teslas."},
             "TotalIntensity":{"type":"number","minimum":0,"description":"Total magnitude in SI teslas."},
             "Declination":{"type":["number","null"],"description":"SI radians positive east of north; null if horizontal intensity is zero."},
-            "Inclination":{"type":["number","null"],"description":"SI radians positive downward; null if total intensity is zero."}
+            "MagneticDip":{"type":["number","null"],"description":"SI radians positive downward; null if total intensity is zero."}
           },
-          "required":["Input","North","East","Down","HorizontalIntensity","TotalIntensity","Declination","Inclination"],"additionalProperties":false
+          "required":["Input","North","East","Down","HorizontalIntensity","TotalIntensity","Declination","MagneticDip"],"additionalProperties":false
         },
         "modelInfo":{
           "type":"object",

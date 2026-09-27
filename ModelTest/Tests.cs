@@ -37,7 +37,7 @@ public class Tests
             Assert.That(result.TotalIntensity,
                 Is.EqualTo(Math.Sqrt(result.HorizontalIntensity * result.HorizontalIntensity + result.Down * result.Down)).Within(1e-16));
             Assert.That(result.Declination, Is.EqualTo(Math.Atan2(result.East, result.North)).Within(1e-15));
-            Assert.That(result.Inclination, Is.EqualTo(Math.Atan2(result.Down, result.HorizontalIntensity)).Within(1e-15));
+            Assert.That(result.MagneticDip, Is.EqualTo(Math.Atan2(result.Down, result.HorizontalIntensity)).Within(1e-15));
             Assert.That(result.Input.DateTimeUtc.Offset, Is.EqualTo(TimeSpan.Zero));
         });
     }

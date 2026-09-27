@@ -202,9 +202,9 @@
             "format": "double",
             "nullable": true
           },
-          "Inclination": {
+          "MagneticDip": {
             "type": "number",
-            "description": "Inclination in SI radians, positive downward from horizontal; null when total intensity is zero.",
+            "description": "Magnetic dip in SI radians, positive downward from horizontal; null when total intensity is zero.",
             "format": "double",
             "nullable": true
           }

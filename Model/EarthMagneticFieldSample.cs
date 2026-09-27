@@ -24,6 +24,6 @@ public class EarthMagneticFieldSample
     /// <summary>Declination in SI radians, positive east of geodetic north; null when horizontal intensity is zero.</summary>
     public double? Declination { get; set; }
 
-    /// <summary>Inclination in SI radians, positive downward from horizontal; null when total intensity is zero.</summary>
-    public double? Inclination { get; set; }
+    /// <summary>Magnetic dip in SI radians, positive downward from horizontal; null when total intensity is zero.</summary>
+    public double? MagneticDip { get; set; }
 }
