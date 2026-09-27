@@ -1,6 +1,6 @@
 # Semantic bindings
 
-The Model uses published `OSDC.DotnetLibraries.Drilling.SemanticCatalogue` 0.3.0 from NuGet, without a sibling project reference. That catalogue contains the curated EarthGravity, digest and EarthMagneticField vocabulary. Provider-owned `Semantic` attributes are authoritative for the bindings in this service.
+The Model uses published `OSDC.DotnetLibraries.Drilling.SemanticCatalogue` 0.4.0 from NuGet, without a sibling project reference. That catalogue contains the curated EarthGravity, digest and EarthMagneticField vocabulary. Provider-owned `Semantic` attributes are authoritative for the bindings in this service.
 
 `SemanticSchemaFilter` exports them in REST/OpenAPI as `x-osdc-semantic`. MCP applies the same attributes to request, response, inline evaluation-point and named result/provenance schemas. Model information is shared between MCP discovery and evaluation. Generated merged OpenAPI retains the annotations; the C# client keeps its existing JSON property names and value types.
 
