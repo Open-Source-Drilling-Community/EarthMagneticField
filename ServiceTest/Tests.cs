@@ -306,7 +306,7 @@ public class Tests
             foreach (JsonElement schema in new[] { restSchema, mcpSchema })
             {
                 JsonElement annotation = schema.GetProperty("x-osdc-semantic");
-                Assert.That(annotation.GetProperty("catalogueVersion").GetString(), Is.EqualTo("0.4.0"));
+                Assert.That(annotation.GetProperty("catalogueVersion").GetString(), Is.EqualTo("0.15.0"));
                 Assert.That(annotation.GetProperty("curationStatus").GetString(), Is.EqualTo("Reviewed"));
                 Assert.That(JsonNode.DeepEquals(expected, JsonNode.Parse(annotation.GetRawText())), Is.True, member.Name);
             }

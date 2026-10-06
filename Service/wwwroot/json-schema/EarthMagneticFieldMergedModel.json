@@ -137,7 +137,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geodetic-latitude",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -153,7 +153,12 @@
               "requiredContext": [
                 "reference",
                 "axis/sign convention"
-              ]
+              ],
+              "constraints": [
+                "Positions are not additive extents."
+              ],
+              "referenceDefinition": "WGS84 geodetic latitude/longitude with Greenwich origin and ellipsoidal depth positive downward; not a fully specified terrestrial frame realization or epoch.",
+              "referenceRequiredContext": [ ]
             }
           },
           "Longitude": {
@@ -164,7 +169,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geodetic-longitude",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -180,7 +185,12 @@
               "requiredContext": [
                 "reference",
                 "axis/sign convention"
-              ]
+              ],
+              "constraints": [
+                "Positions are not additive extents."
+              ],
+              "referenceDefinition": "WGS84 geodetic latitude/longitude with Greenwich origin and ellipsoidal depth positive downward; not a fully specified terrestrial frame realization or epoch.",
+              "referenceRequiredContext": [ ]
             }
           },
           "Depth": {
@@ -189,7 +199,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:ellipsoidal-depth",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -205,7 +215,14 @@
               "requiredContext": [
                 "reference",
                 "axis/sign convention"
-              ]
+              ],
+              "constraints": [
+                "Depth = -ellipsoidal height; not a geoid or mean-sea-level depth.",
+                "Positions are not additive extents.",
+                "A quantity of length does not make depth positions summable."
+              ],
+              "referenceDefinition": "WGS84 geodetic latitude/longitude with Greenwich origin and ellipsoidal depth positive downward; not a fully specified terrestrial frame realization or epoch.",
+              "referenceRequiredContext": [ ]
             }
           },
           "DateTimeUtc": {
@@ -214,7 +231,7 @@
             "format": "date-time",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:instant",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -222,18 +239,22 @@
               "requiredContext": [
                 "time scale",
                 "timestamp representation"
-              ]
+              ],
+              "constraints": [ ],
+              "referenceDefinition": "UTC time-scale reference for a timestamp. Accepted serialization and representable precision are provider concerns.",
+              "referenceRequiredContext": [ ]
             }
           }
         },
         "description": "A WGS84 position and UTC instant at which to evaluate the magnetic field.",
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.4.0",
+          "catalogueVersion": "0.15.0",
           "concept": "urn:osdc:semantic:geodetic-evaluation-point",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
-          "requiredContext": [ ]
+          "requiredContext": [ ],
+          "constraints": [ ]
         }
       },
       "EarthMagneticFieldModel": {
@@ -255,11 +276,12 @@
             ],
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geodetic-evaluation-point",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
-              "requiredContext": [ ]
+              "requiredContext": [ ],
+              "constraints": [ ]
             }
           },
           "North": {
@@ -268,7 +290,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:earth-magnetic-flux-density",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -288,7 +310,10 @@
                 "geomagnetic model",
                 "component or magnitude role",
                 "frame for components"
-              ]
+              ],
+              "constraints": [ ],
+              "referenceDefinition": "Local north, east and downward axes at the evaluation position on WGS84; downward is opposite ellipsoidal up.",
+              "referenceRequiredContext": [ ]
             }
           },
           "East": {
@@ -297,7 +322,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:earth-magnetic-flux-density",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -317,7 +342,10 @@
                 "geomagnetic model",
                 "component or magnitude role",
                 "frame for components"
-              ]
+              ],
+              "constraints": [ ],
+              "referenceDefinition": "Local north, east and downward axes at the evaluation position on WGS84; downward is opposite ellipsoidal up.",
+              "referenceRequiredContext": [ ]
             }
           },
           "Down": {
@@ -326,7 +354,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:earth-magnetic-flux-density",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -346,7 +374,10 @@
                 "geomagnetic model",
                 "component or magnitude role",
                 "frame for components"
-              ]
+              ],
+              "constraints": [ ],
+              "referenceDefinition": "Local north, east and downward axes at the evaluation position on WGS84; downward is opposite ellipsoidal up.",
+              "referenceRequiredContext": [ ]
             }
           },
           "HorizontalIntensity": {
@@ -355,7 +386,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:earth-magnetic-flux-density",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -375,7 +406,10 @@
                 "geomagnetic model",
                 "component or magnitude role",
                 "frame for components"
-              ]
+              ],
+              "constraints": [ ],
+              "referenceDefinition": "Local north, east and downward axes at the evaluation position on WGS84; downward is opposite ellipsoidal up.",
+              "referenceRequiredContext": [ ]
             }
           },
           "TotalIntensity": {
@@ -384,7 +418,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:earth-magnetic-flux-density",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -403,7 +437,8 @@
                 "geomagnetic model",
                 "component or magnitude role",
                 "frame for components"
-              ]
+              ],
+              "constraints": [ ]
             }
           },
           "Declination": {
@@ -413,7 +448,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:magnetic-declination",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -431,7 +466,10 @@
                 "instant",
                 "geomagnetic model",
                 "local frame"
-              ]
+              ],
+              "constraints": [ ],
+              "referenceDefinition": "Local north, east and downward axes at the evaluation position on WGS84; downward is opposite ellipsoidal up.",
+              "referenceRequiredContext": [ ]
             }
           },
           "MagneticDip": {
@@ -441,7 +479,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:magnetic-dip",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -463,18 +501,22 @@
                 "horizontal plane",
                 "measurement section",
                 "sign and range"
-              ]
+              ],
+              "constraints": [ ],
+              "referenceDefinition": "Local north, east and downward axes at the evaluation position on WGS84; downward is opposite ellipsoidal up.",
+              "referenceRequiredContext": [ ]
             }
           }
         },
         "description": "A geomagnetic-field result in the public north-east-down frame.",
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.4.0",
+          "catalogueVersion": "0.15.0",
           "concept": "urn:osdc:semantic:geomagnetic-sample",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
-          "requiredContext": [ ]
+          "requiredContext": [ ],
+          "constraints": [ ]
         }
       },
       "EarthMagneticFieldServiceInfo": {
@@ -512,12 +554,13 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geomagnetic-model-provenance",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
               "role": "urn:osdc:semantic:model-provenance",
-              "requiredContext": [ ]
+              "requiredContext": [ ],
+              "constraints": [ ]
             }
           }
         },
@@ -577,13 +620,14 @@
             ],
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:model-selection-token",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
               "requiredContext": [
                 "provider model selection vocabulary"
-              ]
+              ],
+              "constraints": [ ]
             }
           },
           "Name": {
@@ -592,11 +636,12 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:model-name",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
-              "requiredContext": [ ]
+              "requiredContext": [ ],
+              "constraints": [ ]
             }
           },
           "ID": {
@@ -605,11 +650,12 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:model-identifier",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
-              "requiredContext": [ ]
+              "requiredContext": [ ],
+              "constraints": [ ]
             }
           },
           "Description": {
@@ -624,11 +670,12 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:model-release-date",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
-              "requiredContext": [ ]
+              "requiredContext": [ ],
+              "constraints": [ ]
             }
           },
           "MinimumUtc": {
@@ -637,7 +684,7 @@
             "format": "date-time",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:instant",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -646,7 +693,10 @@
               "requiredContext": [
                 "time scale",
                 "timestamp representation"
-              ]
+              ],
+              "constraints": [ ],
+              "referenceDefinition": "UTC time-scale reference for a timestamp. Accepted serialization and representable precision are provider concerns.",
+              "referenceRequiredContext": [ ]
             }
           },
           "MaximumUtc": {
@@ -655,7 +705,7 @@
             "format": "date-time",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:instant",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -664,7 +714,10 @@
               "requiredContext": [
                 "time scale",
                 "timestamp representation"
-              ]
+              ],
+              "constraints": [ ],
+              "referenceDefinition": "UTC time-scale reference for a timestamp. Accepted serialization and representable precision are provider concerns.",
+              "referenceRequiredContext": [ ]
             }
           },
           "MinimumDepth": {
@@ -673,7 +726,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:ellipsoidal-depth",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -690,7 +743,14 @@
               "requiredContext": [
                 "reference",
                 "axis/sign convention"
-              ]
+              ],
+              "constraints": [
+                "Depth = -ellipsoidal height; not a geoid or mean-sea-level depth.",
+                "Positions are not additive extents.",
+                "A quantity of length does not make depth positions summable."
+              ],
+              "referenceDefinition": "WGS84 geodetic latitude/longitude with Greenwich origin and ellipsoidal depth positive downward; not a fully specified terrestrial frame realization or epoch.",
+              "referenceRequiredContext": [ ]
             }
           },
           "MaximumDepth": {
@@ -699,7 +759,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:ellipsoidal-depth",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -716,7 +776,14 @@
               "requiredContext": [
                 "reference",
                 "axis/sign convention"
-              ]
+              ],
+              "constraints": [
+                "Depth = -ellipsoidal height; not a geoid or mean-sea-level depth.",
+                "Positions are not additive extents.",
+                "A quantity of length does not make depth positions summable."
+              ],
+              "referenceDefinition": "WGS84 geodetic latitude/longitude with Greenwich origin and ellipsoidal depth positive downward; not a fully specified terrestrial frame realization or epoch.",
+              "referenceRequiredContext": [ ]
             }
           },
           "Degree": {
@@ -725,11 +792,12 @@
             "format": "int32",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:spherical-harmonic-degree",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
-              "requiredContext": [ ]
+              "requiredContext": [ ],
+              "constraints": [ ]
             }
           },
           "Order": {
@@ -738,11 +806,12 @@
             "format": "int32",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:spherical-harmonic-order",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
-              "requiredContext": [ ]
+              "requiredContext": [ ],
+              "constraints": [ ]
             }
           },
           "GeographicLibVersion": {
@@ -751,11 +820,12 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:calculation-runtime-version",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
-              "requiredContext": [ ]
+              "requiredContext": [ ],
+              "constraints": [ ]
             }
           },
           "ReferenceEllipsoid": {
@@ -764,11 +834,12 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:reference-ellipsoid",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
-              "requiredContext": [ ]
+              "requiredContext": [ ],
+              "constraints": [ ]
             }
           },
           "CoordinateFrame": {
@@ -801,7 +872,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:sha256-file-digest",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -810,6 +881,11 @@
                 "digest algorithm",
                 "source file and its purpose",
                 "digest representation"
+              ],
+              "constraints": [
+                "SHA-256 is the digest algorithm; the provider declares the encoding of its 256-bit output.",
+                "A digest is not a model version or proof of authenticity.",
+                "Compare digests only with compatible algorithms, input-byte scope and representations."
               ]
             }
           },
@@ -819,7 +895,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:sha256-file-digest",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -828,6 +904,11 @@
                 "digest algorithm",
                 "source file and its purpose",
                 "digest representation"
+              ],
+              "constraints": [
+                "SHA-256 is the digest algorithm; the provider declares the encoding of its 256-bit output.",
+                "A digest is not a model version or proof of authenticity.",
+                "Compare digests only with compatible algorithms, input-byte scope and representations."
               ]
             }
           }
@@ -835,11 +916,12 @@
         "description": "Identity, validity, and provenance of one installed geomagnetic reference model.",
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.4.0",
+          "catalogueVersion": "0.15.0",
           "concept": "urn:osdc:semantic:geomagnetic-model-provenance",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
-          "requiredContext": [ ]
+          "requiredContext": [ ],
+          "constraints": [ ]
         }
       },
       "EvaluateEarthMagneticFieldRequest": {
@@ -856,13 +938,14 @@
             ],
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:model-selection-token",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
               "requiredContext": [
                 "provider model selection vocabulary"
-              ]
+              ],
+              "constraints": [ ]
             }
           },
           "Samples": {
@@ -874,23 +957,25 @@
             "description": "Evaluation points. Any invalid sample rejects the complete request.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geodetic-evaluation-point",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
               "role": "urn:osdc:semantic:input-evaluation-points",
-              "requiredContext": [ ]
+              "requiredContext": [ ],
+              "constraints": [ ]
             }
           }
         },
         "description": "A stateless synchronous geomagnetic-field evaluation request.",
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.4.0",
+          "catalogueVersion": "0.15.0",
           "concept": "urn:osdc:semantic:geomagnetic-evaluation-request",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
-          "requiredContext": [ ]
+          "requiredContext": [ ],
+          "constraints": [ ]
         }
       },
       "EvaluateEarthMagneticFieldResponse": {
@@ -904,12 +989,13 @@
             ],
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geomagnetic-model-provenance",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
               "role": "urn:osdc:semantic:model-provenance",
-              "requiredContext": [ ]
+              "requiredContext": [ ],
+              "constraints": [ ]
             }
           },
           "Samples": {
@@ -920,23 +1006,25 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geomagnetic-sample",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
               "role": "urn:osdc:semantic:output-samples",
-              "requiredContext": [ ]
+              "requiredContext": [ ],
+              "constraints": [ ]
             }
           }
         },
         "description": "Geomagnetic results in the same order as the request samples.",
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.4.0",
+          "catalogueVersion": "0.15.0",
           "concept": "urn:osdc:semantic:geomagnetic-evaluation-response",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
-          "requiredContext": [ ]
+          "requiredContext": [ ],
+          "constraints": [ ]
         }
       },
       "UsageStatisticsEarthMagneticField": {
