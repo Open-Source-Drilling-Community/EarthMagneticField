@@ -10,4 +10,4 @@ Author: Eric Cayeux
 
 Company: NORCE Research
 
-The Model references SemanticCatalogue 0.15.0 from NuGet. Semantic attributes declare concepts, roles and references on engineering DTOs; they do not change serialization or validation. UTC instants have no duration quantity. SHA-256 digests share one noun with distinct source-file roles.
+The Model references SemanticCatalogue 0.16.0 from NuGet. Semantic attributes declare concepts, roles and references on engineering DTOs; they do not change serialization or validation. UTC instants have no duration quantity. SHA-256 digests share one noun with distinct source-file roles.
