@@ -192,6 +192,14 @@ public class Tests
             Assert.That(tools.GetArrayLength(), Is.EqualTo(3));
             Assert.That(tools.EnumerateArray().All(tool => tool.TryGetProperty("inputSchema", out _)), Is.True);
             Assert.That(tools.EnumerateArray().All(tool => tool.TryGetProperty("outputSchema", out _)), Is.True);
+            foreach (JsonElement tool in tools.EnumerateArray())
+            {
+                var hints = tool.GetProperty("annotations");
+                Assert.That(hints.GetProperty("readOnlyHint").GetBoolean(), Is.True);
+                Assert.That(hints.GetProperty("destructiveHint").GetBoolean(), Is.False);
+                Assert.That(hints.GetProperty("idempotentHint").GetBoolean(), Is.True);
+                Assert.That(hints.GetProperty("openWorldHint").GetBoolean(), Is.False);
+            }
             Assert.That(tools.ToString(), Does.Not.Contain("usage_statistics").IgnoreCase);
             Assert.That(description, Does.Contain("north-east-down"));
             JsonElement resultSchema = evaluate.GetProperty("outputSchema").GetProperty("$defs").GetProperty("result");

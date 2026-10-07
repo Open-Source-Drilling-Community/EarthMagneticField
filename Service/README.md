@@ -19,3 +19,5 @@ The merged OpenAPI document advertises the API root (`/EarthMagneticField/api`) 
 Magnetic dip uses the `MagneticDip` result property and the label “Magnetic dip”. It is in SI radians, positive downward from horizontal, and nullable when total magnetic flux density is zero. Service and client releases must agree on this property name.
 
 SemanticSchemaFilter publishes model attributes as x-osdc-semantic in OpenAPI. MCP schemas use the same attributes; discovery and evaluation share one annotated model-information schema. Required fields, nullability and execution policies remain provider-owned. REST defaults an omitted Model to WMM2025; MCP requires explicit Model selection.
+
+All registered stateless MCP tools now explicitly publish all four behavior hints: read-only, idempotent, non-destructive and closed-world. The tools/list regression checks every hint. After deployment, rediscover these contracts in consuming DrillWeaver installations; redeployment alone does not refresh their saved catalogue.

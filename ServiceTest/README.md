@@ -13,3 +13,5 @@ The merged OpenAPI document advertises the API root (`/EarthMagneticField/api`) 
 Magnetic-dip checks verify the `MagneticDip` calculation and contract name; service tests cover REST, MCP, OpenAPI and the generated client, including removal of the former result property.
 
 REST/MCP semantic parity tests compare every annotated model type/property against its provider attribute, including catalogue version/status, resolved quantities, UTC bounds and the two SHA-256 source-file roles. Discovery and evaluation model schemas must match.
+
+All registered stateless MCP tools now explicitly publish all four behavior hints: read-only, idempotent, non-destructive and closed-world. The tools/list regression checks every hint. After deployment, rediscover these contracts in consuming DrillWeaver installations; redeployment alone does not refresh their saved catalogue.

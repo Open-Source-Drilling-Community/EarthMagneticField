@@ -111,3 +111,5 @@ The Service chart creates a PVC mounted at `/home` by default for statistics per
 Author: Eric Cayeux
 
 Company: NORCE Research
+
+All registered stateless MCP tools now explicitly publish all four behavior hints: read-only, idempotent, non-destructive and closed-world. The tools/list regression checks every hint. After deployment, rediscover these contracts in consuming DrillWeaver installations; redeployment alone does not refresh their saved catalogue.
