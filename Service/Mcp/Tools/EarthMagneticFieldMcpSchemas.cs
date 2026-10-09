@@ -10,6 +10,7 @@ internal static class EarthMagneticFieldMcpSchemas
     {
         var schema = (JsonObject)BuildEvaluateInput(maximumSamples);
         SemanticMetadata.AnnotateObject(schema, typeof(EvaluateEarthMagneticFieldRequest));
+        schema[SemanticMetadata.ExtensionName]!["role"] = Concepts.StatelessEvaluation;
         SemanticMetadata.AnnotateObject((JsonObject)schema["properties"]!["Samples"]!["items"]!, typeof(EarthMagneticFieldEvaluationPoint));
         return schema;
     }
@@ -30,6 +31,13 @@ internal static class EarthMagneticFieldMcpSchemas
         // Use exactly the same model schema and annotations for discovery and evaluation.
         schema["$defs"]!["modelInfo"] = EvaluateOutput()["$defs"]!["modelInfo"]!.DeepClone();
         SemanticMetadata.AnnotateObject(schema, typeof(EarthMagneticFieldServiceInfo));
+        return schema;
+    }
+
+    public static JsonNode ServiceInfoInput()
+    {
+        var schema = (JsonObject)JsonNode.Parse("""{"type":"object","properties":{},"additionalProperties":false}""")!;
+        schema[SemanticMetadata.ExtensionName] = SemanticMetadata.Create(Concepts.GeomagneticModelProvenance, Concepts.ResourceCollectionRetrieval, assertionSource: "provider-mcp-operation");
         return schema;
     }
 

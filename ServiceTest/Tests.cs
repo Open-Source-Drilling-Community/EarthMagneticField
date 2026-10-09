@@ -275,6 +275,7 @@ public class Tests
         JsonElement evaluate = tools.EnumerateArray().Single(t => t.GetProperty("name").GetString() == "earth_magnetic_field_evaluate");
         JsonElement discovery = tools.EnumerateArray().Single(t => t.GetProperty("name").GetString() == "earth_magnetic_field_get_model_info").GetProperty("outputSchema");
         JsonElement input = evaluate.GetProperty("inputSchema"), output = evaluate.GetProperty("outputSchema");
+        Assert.That(input.GetProperty("x-osdc-semantic").GetProperty("role").GetString(), Is.EqualTo(Concepts.StatelessEvaluation));
         JsonElement definitions = output.GetProperty("$defs");
         var pairs = new (Type Model, JsonElement Mcp)[]
         {
@@ -311,12 +312,15 @@ public class Tests
         {
             JsonObject? expected = SemanticMetadata.For(member);
             if (expected is null) return;
-            foreach (JsonElement schema in new[] { restSchema, mcpSchema })
+            foreach ((JsonElement schema, bool isMcp) in new[] { (restSchema, false), (mcpSchema, true) })
             {
                 JsonElement annotation = schema.GetProperty("x-osdc-semantic");
-                Assert.That(annotation.GetProperty("catalogueVersion").GetString(), Is.EqualTo("0.16.0"));
+                Assert.That(annotation.GetProperty("catalogueVersion").GetString(), Is.EqualTo("0.18.0"));
                 Assert.That(annotation.GetProperty("curationStatus").GetString(), Is.EqualTo("Reviewed"));
-                Assert.That(JsonNode.DeepEquals(expected, JsonNode.Parse(annotation.GetRawText())), Is.True, member.Name);
+                JsonObject actual = JsonNode.Parse(annotation.GetRawText())!.AsObject();
+                if (isMcp && member == typeof(Model.EvaluateEarthMagneticFieldRequest))
+                    actual.Remove("role");
+                Assert.That(JsonNode.DeepEquals(expected, actual), Is.True, member.Name);
             }
             checkedBindings++;
         }
