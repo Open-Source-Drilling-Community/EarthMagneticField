@@ -19,3 +19,7 @@ Company: NORCE Research
 Magnetic dip uses the `MagneticDip` result property and the label “Magnetic dip”. It is in SI radians, positive downward from horizontal, and nullable when total magnetic flux density is zero. Service and client releases must agree on this property name.
 
 HorizontalIntensity and TotalIntensity are displayed as horizontal/total magnetic flux density (EarthMagneticFluxDensity, SI teslas). MagneticDip and Declination use PlaneAngleDrilling in SI radians. Physical quantities agree with the service semantic annotations.
+
+## Package release 1.0.4
+
+This release packages the current WebPages and generated contracts. Update consuming WebApps to `OSDC.Drilling.EarthMagneticField.WebPages` version `1.0.4` after it is available on nuget.org.
