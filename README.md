@@ -96,7 +96,7 @@ Docker Hub images:
 - `digiwells/osdcdrillingearthmagneticfieldservice`
 - `digiwells/osdcdrillingearthmagneticfieldwebappclient`
 
-The Docker GitHub Action uses private repository secrets `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`. The WebPages publishing action uses `NUGET_API_KEY` and publishes `OSDC.Drilling.EarthMagneticField.WebPages`.
+The Docker GitHub Action uses private repository secrets `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`. The WebPages publishing action uses GitHub OIDC trusted publishing with `NUGET_USER` (see `WebPages/README.md`) and publishes `OSDC.Drilling.EarthMagneticField.WebPages`.
 
 ```powershell
 docker build -f Service/Dockerfile -t digiwells/osdcdrillingearthmagneticfieldservice:local .
